@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: agape-camp
+    runtime: go
+    plan: free
+    buildCommand: go build -o agape-camp .
+    startCommand: ./agape-camp
+    healthCheckPath: /healthz
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: DB_SSLMODE
+        value: require
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        value: postgres
+      - key: DB_HOST
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        sync: false

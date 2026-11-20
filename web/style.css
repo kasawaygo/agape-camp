@@ -1,0 +1,648 @@
+
+/* =================================
+   AGAPE T-MORE CAMP 2
+   Central vertical paper layout
+================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    background: #dfcfc2;
+    padding: 28px 16px;
+    color: #292522;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Main paper sheet */
+
+.paper {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
+    background: #f8eee5;
+    border-radius: 3px;
+    box-shadow:
+        0 8px 35px rgba(65, 42, 29, 0.20),
+        0 2px 8px rgba(65, 42, 29, 0.10);
+}
+
+/* Poster */
+
+.poster {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+}
+
+.poster img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Registration section */
+
+.form-section {
+    width: 100%;
+    padding: 30px 26px 38px;
+    border: none;
+    border-radius: 0;
+
+    background-color: #f9eee5;
+    background-image:
+        radial-gradient(
+            rgba(192, 155, 126, 0.22) 0.6px,
+            transparent 0.6px
+        );
+
+    background-size: 5px 5px;
+}
+
+/* Section title */
+
+.form-section h2 {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(38px, 6vw, 52px);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #292522;
+}
+
+/* Role selection */
+
+.roles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.role-card {
+    min-height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    border: 2px solid #e8ae58;
+    border-radius: 20px;
+
+    padding: 12px;
+    background: #fff2d8;
+
+    font-size: 17px;
+    font-weight: 900;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.role-card span {
+    font-size: 27px;
+}
+
+.role-card input {
+    accent-color: #f07817;
+}
+
+.role-card.selected {
+    outline: 3px solid #f6a42b;
+    outline-offset: 2px;
+}
+
+/* Form grid */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 19px 16px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.field label {
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.field input,
+.field textarea {
+    width: 100%;
+    min-height: 46px;
+
+    border: 1.5px solid #c8b6a8;
+    border-radius: 12px;
+
+    background: #fffdfa;
+    padding: 12px;
+
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.field input:focus,
+.field textarea:focus {
+    border-color: #f07817;
+    box-shadow: 0 0 0 3px #f0781722;
+}
+
+.field textarea {
+    min-height: 105px;
+    resize: vertical;
+}
+
+.service-field {
+    grid-column: 1 / -1;
+}
+
+/* Consent */
+
+.consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    margin: 22px 0;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.consent input {
+    margin-top: 3px;
+    accent-color: #f07817;
+}
+
+/* Submit button */
+
+button {
+    width: 100%;
+    min-height: 62px;
+
+    border: none;
+    border-radius: 40px;
+
+    background: linear-gradient(
+        135deg,
+        #ff941c,
+        #f15a12
+    );
+
+    color: white;
+
+    font-family: 'Caveat', cursive;
+    font-size: 30px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow: 0 5px 12px #e96a2344;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    filter: brightness(1.06);
+    transform: translateY(-2px);
+}
+
+#formMessage {
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* Footer */
+
+footer {
+    text-align: center;
+    padding: 0 15px 20px;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    opacity: 0.5;
+}
+
+/* Tablet */
+
+@media (max-width: 700px) {
+    body {
+        padding: 14px 10px;
+    }
+
+    .paper {
+        max-width: 600px;
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 550px) {
+    body {
+        padding: 0;
+        background: #f9eee5;
+    }
+
+    .paper {
+        width: 100%;
+        max-width: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .form-section {
+        padding: 25px 16px 30px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .service-field {
+        grid-column: auto;
+    }
+
+    .roles {
+        gap: 8px;
+    }
+
+    .role-card {
+        padding: 10px 5px;
+        font-size: 14px;
+        gap: 6px;
+    }
+
+    .role-card span {
+        font-size: 23px;
+    }
+
+    .form-section h2 {
+        margin-bottom: 20px;
+    }
+
+    button {
+        min-height: 58px;
+    }
+}
+
+/* ===== CONDITIONAL FORM FIELDS ===== */
+
+[hidden] {
+    display: none !important;
+}
+
+.service-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.service-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 10px 13px;
+    border: 1.5px solid #e8c49a;
+    border-radius: 13px;
+    background: #fff7e9;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 800;
+    transition: background .2s, border-color .2s, transform .2s;
+}
+
+.service-option:has(input:checked) {
+    background: #ffe2ad;
+    border-color: #f07817;
+    transform: translateY(-1px);
+}
+
+.service-option input {
+    width: 17px;
+    height: 17px;
+    accent-color: #f07817;
+    flex-shrink: 0;
+}
+
+#otherServiceText {
+    margin-top: 12px;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px;
+    border: 1.5px solid #c8b6a8;
+    border-radius: 12px;
+    background: #fffdfa;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+
+/* ===== BEAUTIFUL SNOWFALL ===== */
+
+.snow-container {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.snowflake {
+    position: absolute;
+    top: -30px;
+    left: var(--left);
+    color: white;
+    font-size: var(--size);
+    opacity: var(--opacity);
+    text-shadow: 0 0 5px rgba(255,255,255,.9);
+    animation: snowfall var(--duration) linear var(--delay) infinite;
+    will-change: transform;
+}
+
+@keyframes snowfall {
+    0% {
+        transform: translate3d(0, -30px, 0) rotate(0deg);
+    }
+
+    25% {
+        transform: translate3d(var(--sway), 25vh, 0) rotate(90deg);
+    }
+
+    50% {
+        transform: translate3d(calc(var(--sway) * -0.5), 50vh, 0) rotate(180deg);
+    }
+
+    75% {
+        transform: translate3d(var(--sway), 75vh, 0) rotate(270deg);
+    }
+
+    100% {
+        transform: translate3d(0, 110vh, 0) rotate(360deg);
+    }
+}
+
+@media (max-width: 550px) {
+    .service-options {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .service-option {
+        font-size: 12px;
+        padding: 9px;
+    }
+
+    .snowflake {
+        text-shadow: 0 0 4px white;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .snowflake {
+        display: none;
+    }
+}
+
+
+/* Allergy section */
+
+.allergy-hint {
+    font-size: 13px;
+    color: #77695f;
+    line-height: 1.5;
+    margin: 3px 0 8px;
+}
+
+.allergy-options {
+    margin-bottom: 5px;
+}
+
+.allergy-consent {
+    margin-top: 16px;
+    align-items: flex-start;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.allergy-consent input {
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+#otherAllergyText {
+    width: 100%;
+    margin-top: 10px;
+    min-height: 46px;
+    padding: 12px;
+    border: 1.5px solid #c8b6a8;
+    border-radius: 12px;
+    background: #fffdfa;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+
+@media (max-width: 550px) {
+    .allergy-options {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+/* Fix checkbox sizing inside form fields */
+
+.field input:not([type="checkbox"]):not([type="radio"]),
+.field textarea {
+    width: 100%;
+}
+
+/* Allergy consent layout */
+
+.allergy-consent {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    width: 100%;
+    gap: 10px;
+    margin: 16px 0;
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.allergy-consent input[type="checkbox"] {
+    appearance: auto;
+    -webkit-appearance: checkbox;
+    display: block;
+    flex: 0 0 17px;
+    width: 17px !important;
+    min-width: 17px;
+    height: 17px;
+    min-height: 17px;
+    margin: 2px 0 0;
+    padding: 0;
+}
+
+.allergy-consent {
+    overflow-wrap: anywhere;
+}
+
+/* Parent phone field */
+
+#parentPhoneField {
+    grid-column: 1 / -1;
+}
+
+#parentPhoneField[hidden] {
+    display: none !important;
+}
+
+/* ===== MOBILE OPTIMIZATION ===== */
+
+/* Prevent horizontal overflow */
+html,
+body {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+}
+
+/* Better mobile form fields */
+.field input,
+.field textarea,
+#otherServiceText,
+#otherAllergyText {
+    font-size: 16px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Better touch targets */
+.role-card,
+.service-option {
+    min-height: 52px;
+}
+
+input,
+textarea,
+button {
+    touch-action: manipulation;
+}
+
+/* Better mobile spacing */
+@media (max-width: 550px) {
+
+    body {
+        padding: 0;
+    }
+
+    .form-section {
+        padding: 24px 16px 32px;
+    }
+
+    .form-section h2 {
+        font-size: 42px;
+    }
+
+    .roles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .role-card {
+        min-width: 0;
+        font-size: 14px;
+        padding: 10px 6px;
+    }
+
+    .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .field {
+        min-width: 0;
+    }
+
+    .field input,
+    .field textarea {
+        min-height: 50px;
+    }
+
+    .service-options,
+    .allergy-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .service-option {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    button {
+        min-height: 56px;
+    }
+
+    footer {
+        padding-bottom: 24px;
+    }
+
+    /* Reduce animation workload on phones */
+    .snowflake {
+        font-size: calc(var(--size) * 0.75);
+    }
+}
+
+/* Very narrow phones */
+@media (max-width: 360px) {
+    .form-section {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .role-card {
+        font-size: 12px;
+        gap: 4px;
+    }
+
+    .role-card span {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 550px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .field input,
+    .field textarea {
+        min-height: 52px;
+    }
+
+    .form-section {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}

@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGAPE CAMP | Admin Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <main class="login-container">
+        <div class="login-card">
+            <div class="logo">AGAPE</div>
+            <p class="subtitle">T-MORE CAMP 2</p>
+
+            <div class="divider"></div>
+
+            <h1>Admin Panel</h1>
+            <p class="description">Войдите, чтобы управлять регистрациями</p>
+
+            <form id="loginForm">
+                <label for="password">Пароль администратора</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Введите пароль"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button type="submit" id="loginButton">
+                    Войти
+                </button>
+
+                <p id="loginMessage"></p>
+            </form>
+        </div>
+
+        <p class="footer">AGAPE CAMP © 2026</p>
+    </main>
+
+    <script src="login.js"></script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGAPE CAMP | Dashboard</title>
+    <link rel="stylesheet" href="/admin/dashboard.css">
+</head>
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <h2>AGAPE</h2>
+            <span>T-MORE CAMP 2</span>
+        </div>
+
+        <nav>
+            <a href="#" class="nav-link active">▦ Dashboard</a>
+            <a href="#registrations" class="nav-link">♧ Регистрации</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <span>AGAPE CAMP · 2026</span>
+            <button id="logoutButton">Выйти ↗</button>
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">ADMINISTRATION</p>
+                <h1>Dashboard</h1>
+            </div>
+
+            <div class="admin-badge">
+                <span class="status-dot"></span>
+                Administrator
+            </div>
+        </header>
+
+        <section class="welcome">
+            <div>
+                <p class="eyebrow">AGAPE T-MORE CAMP 2</p>
+                <h2>Регистрации участников</h2>
+                <p>Управление анкетами лагеря в одном месте.</p>
+            </div>
+            <div class="welcome-icon">✦</div>
+        </section>
+
+        <section class="stats">
+
+            <article class="stat-card">
+                <span>Всего регистраций</span>
+                <strong id="totalCount">—</strong>
+                <small>Все анкеты</small>
+            </article>
+
+            <article class="stat-card">
+                <span>Участники</span>
+                <strong id="participantCount">—</strong>
+                <small>Participant</small>
+            </article>
+
+            <article class="stat-card">
+                <span>Служители</span>
+                <strong id="servantCount">—</strong>
+                <small>Servant</small>
+            </article>
+
+        </section>
+
+        <section class="registrations" id="registrations">
+
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">DATABASE</p>
+                    <h2>Все регистрации</h2>
+                </div>
+
+                <div class="section-actions">
+                    <button id="exportButton">↓ Экспорт Excel</button>
+                    <button id="refreshButton">↻ Обновить</button>
+                </div>
+            </div>
+
+            <div class="toolbar">
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Имя, телефон, Telegram или церковь..."
+                >
+
+                <select id="churchFilter">
+                    <option value="all">Все церкви</option>
+                </select>
+
+                <div class="filters">
+                    <button class="filter active" data-filter="all">Все</button>
+                    <button class="filter" data-filter="participant">Участники</button>
+                    <button class="filter" data-filter="servant">Служители</button>
+                </div>
+
+            </div>
+
+            <div id="loadingMessage">Загружаем регистрации...</div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ИМЯ</th>
+                            <th>РОЛЬ</th>
+                            <th>ЦЕРКОВЬ</th>
+                            <th>ТЕЛЕФОН</th>
+                            <th>ДАТА РЕГИСТРАЦИИ</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="registrationTable"></tbody>
+                </table>
+            </div>
+
+            <div id="emptyMessage" hidden>
+                Регистрации не найдены.
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- REGISTRATION MODAL -->
+<div class="modal-overlay" id="registrationModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+        <div class="modal-header">
+            <div>
+                <p class="eyebrow">REGISTRATION DETAILS</p>
+                <h2 id="modalTitle">Анкета участника</h2>
+            </div>
+
+            <button class="modal-close" id="closeModalButton" aria-label="Закрыть">
+                &times;
+            </button>
+        </div>
+
+        <div class="modal-body" id="modalBody">
+            <!-- Данные анкеты будут добавляться через JavaScript -->
+        </div>
+
+        <div class="modal-footer">
+            <button class="edit-button" id="editRegistrationButton">
+                ✎ Редактировать
+            </button>
+
+            <button class="modal-close-button" id="closeModalFooter">
+                Закрыть
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script src="/admin/dashboard.js"></script>
+
+</body>
+</html>

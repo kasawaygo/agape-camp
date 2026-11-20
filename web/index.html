@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5e9df">
+    <title>Мечта | AGAPE T-MORE CAMP 2</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="snow-container" id="snowContainer"></div>
+    <main class="paper">
+
+        <section class="poster">
+            <img
+                src="images/camp-poster.png"
+                alt="AGAPE T-MORE CAMP 2 — Мечта"
+            >
+        </section>
+
+        <section class="form-section">
+            <h2>Кто ты, воин?</h2>
+
+            <form id="registrationForm">
+
+                <div class="roles">
+                    <label class="role-card selected">
+                        <input type="radio" name="role" value="servant" required>
+                        <span>♡</span>
+                        Служитель
+                    </label>
+
+                    <label class="role-card">
+                        <input type="radio" name="role" value="participant">
+                        <span>♧</span>
+                        Участник
+                    </label>
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="name">Имя и фамилия *</label>
+                        <input id="name" name="name" type="text"
+                               placeholder="Иван Петров" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="phone">Номер телефона *</label>
+                        <input id="phone" name="phone" type="tel"
+                               placeholder="010-..." required>
+                    </div>
+
+                    <div class="field">
+                        <label for="telegram">Telegram *</label>
+                        <input
+                            id="telegram"
+                            name="telegram"
+                            type="text"
+                            placeholder="@username"
+                            autocomplete="off"
+                            autocapitalize="none"
+                            spellcheck="false"
+                            required
+                            minlength="6"
+                            maxlength="33"
+                            pattern="@[A-Za-z][A-Za-z0-9_]{4,31}"
+                            title="Укажи Telegram username начиная с @"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="birthDate">Дата рождения *</label>
+                        <input id="birthDate" name="birthDate"
+                               type="date" required>
+                    </div>
+
+                    <div class="field" id="parentPhoneField" hidden>
+                        <label for="parentPhone">Номер родителя / опекуна *</label>
+                        <input
+                            id="parentPhone"
+                            name="parentPhone"
+                            type="tel"
+                            placeholder="010-..."
+                            autocomplete="tel"
+                            inputmode="tel"
+                        >
+                    </div>                    
+
+                    <div class="field">
+                        <label for="church">Из какой ты церкви?</label>
+                        <input id="church" name="church" type="text"
+                               placeholder="Название церкви / не посещаю">
+                    </div>
+
+
+                <!-- Participant: dream field -->
+
+                    <div class="field service-field" id="allergyField" hidden>
+                        <label>Есть ли у тебя аллергии?</label>
+
+                        <p class="allergy-hint">
+                            Можно выбрать несколько вариантов.
+                            Если аллергий нет, ничего выбирать не нужно.
+                        </p>
+
+                        <div class="service-options allergy-options">
+                            <label class="service-option">
+                                <input type="checkbox" name="allergies" value="Арахис">
+                                <span>🥜 Арахис</span>
+                            </label>
+
+                            <label class="service-option">
+                                <input type="checkbox" name="allergies" value="Другие орехи">
+                                <span>🌰 Другие орехи</span>
+                            </label>
+
+                            <label class="service-option">
+                                <input type="checkbox" name="allergies" value="Молоко">
+                                <span>🥛 Молоко</span>
+                            </label>
+
+                            <label class="service-option">
+                                <input type="checkbox" name="allergies" value="Яйца">
+                                <span>🥚 Яйца</span>
+                            </label>
+
+                            <label class="service-option">
+                                <input type="checkbox" name="allergies" value="Рыба">
+                                <span>🐟 Рыба</span>
+                            </label>
+
+                            <label class="service-option">
+                                <input type="checkbox" name="allergies" value="Морепродукты">
+                                <span>🦐 Морепродукты</span>
+                            </label>
+
+                            <label class="service-option">
+                                <input type="checkbox" name="allergies" value="Пшеница / глютен">
+                                <span>🌾 Пшеница / глютен</span>
+                            </label>
+
+                            <label class="service-option">
+                                <input type="checkbox" name="allergies" value="Соя">
+                                <span>🫘 Соя</span>
+                            </label>
+
+                            <label class="service-option">
+                                <input type="checkbox" name="allergies" value="Кунжут">
+                                <span>🫙 Кунжут</span>
+                            </label>
+
+                            <label class="service-option">
+                                <input type="checkbox" id="otherAllergy" name="allergies" value="Другое">
+                                <span>✏️ Другое</span>
+                            </label>
+                        </div>
+
+                        <input
+                            type="text"
+                            id="otherAllergyText"
+                            placeholder="Укажи свою аллергию..."
+                            hidden
+                        >
+
+                        <label class="consent allergy-consent">
+                            <input type="checkbox" id="allergyConsent">
+                            Я согласен(на) на обработку информации об аллергиях для обеспечения безопасности во время лагеря.
+                        </label>
+                    </div>
+
+                <div class="field service-field" id="dreamField" hidden>
+                    <label for="dream">О чём ты мечтаешь?</label>
+                    <textarea
+                        id="dream"
+                        name="dream"
+                        placeholder="Расскажи о своих мечтах, целях и том, к чему стремишься..."
+                    ></textarea>
+                </div>
+
+                <!-- Servant: service selection -->
+                <div class="field service-field" id="serviceField" hidden>
+                    <label>Где ты хотел бы послужить? Выбери направления *</label>
+
+                    <div class="service-options">
+                        <label class="service-option">
+                            <input type="checkbox" name="serviceAreas" value="Кухня">
+                            <span>🍳 Кухня</span>
+                        </label>
+
+                        <label class="service-option">
+                            <input type="checkbox" name="serviceAreas" value="Вожатый">
+                            <span>🧑‍🤝‍🧑 Вожатый</span>
+                        </label>
+
+                        <label class="service-option">
+                            <input type="checkbox" name="serviceAreas" value="Спикер">
+                            <span>🎤 Спикер</span>
+                        </label>
+
+                        <label class="service-option">
+                            <input type="checkbox" name="serviceAreas" value="Организатор">
+                            <span>📋 Организатор</span>
+                        </label>
+
+                        <label class="service-option">
+                            <input type="checkbox" name="serviceAreas" value="Спонсор">
+                            <span>🤝 Спонсор</span>
+                        </label>
+
+                        <label class="service-option">
+                            <input type="checkbox" name="serviceAreas" value="Медиа">
+                            <span>📸 Медиа</span>
+                        </label>
+
+                        <label class="service-option other-option">
+                            <input
+                                type="checkbox"
+                                id="otherService"
+                                name="serviceAreas"
+                                value="Другое"
+                            >
+                            <span>✏️ Другое</span>
+                        </label>
+                    </div>
+
+                    <input
+                        type="text"
+                        id="otherServiceText"
+                        placeholder="Напиши свой вариант..."
+                        hidden
+                    >
+                </div>
+
+
+                </div>
+
+                <label class="consent">
+                    <input type="checkbox" id="consent" required>
+                    Я согласен(на) на обработку персональных данных
+                </label>
+
+                <button type="submit" id="submitButton">
+                    Отправить анкету →
+                </button>
+
+                <p id="formMessage" aria-live="polite"></p>
+
+            </form>
+        </section>
+
+        <footer>
+            AGAPE · T-MORE CAMP 2
+        </footer>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
