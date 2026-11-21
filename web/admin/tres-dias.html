@@ -1,1 +1,76 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TRES DIAS 2027 — админка</title><link rel="stylesheet" href="/admin/tres-dias.css"><script defer src="/admin/tres-dias.js"></script></head><body><main class="admin"><header><div><a href="/admin">← Админка лагеря</a><p>TRES DIAS · 2027</p><h1>Анкеты регистрации</h1></div><div class="actions"><a class="button" href="/api/admin/tres-dias/registrations/export">Скачать Excel</a><button id="logout">Выйти</button></div></header><section class="filters"><input id="search" type="search" placeholder="Поиск по ФИО, телефону, церкви или городу"><select id="formType"><option value="">Все анкеты</option><option value="participant">Участники</option><option value="servant">Служители</option></select></section><p id="status">Загружаем анкеты…</p><div id="cards" class="cards"></div></main></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGAPE CAMP | TRES DIAS 2027</title>
+    <link rel="stylesheet" href="/admin/dashboard.css">
+    <link rel="stylesheet" href="/admin/tres-dias.css">
+    <script defer src="/admin/tres-dias.js"></script>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand"><h2>AGAPE</h2><span>T-MORE CAMP 2</span></div>
+        <nav>
+            <a href="/admin" class="nav-link">▦ Dashboard</a>
+            <a href="/admin#registrations" class="nav-link">♧ Регистрации</a>
+            <a href="/admin/tres-dias" class="nav-link active" aria-current="page">✦ TRES DIAS 2027</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <span>AGAPE CAMP · 2026</span>
+            <button id="logoutButton">Выйти ↗</button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div><p class="eyebrow">ADMINISTRATION</p><h1>TRES DIAS 2027</h1></div>
+            <div class="admin-badge"><span class="status-dot"></span>Administrator</div>
+        </header>
+
+        <section class="welcome">
+            <div><p class="eyebrow">TRES DIAS · 2027</p><h2>Регистрации участников</h2><p>Анкеты участников и служителей TRES DIAS.</p></div>
+            <div class="welcome-icon">✦</div>
+        </section>
+
+        <section class="stats">
+            <article class="stat-card"><span>Всего анкет</span><strong id="totalCount">—</strong><small>Все регистрации TRES DIAS</small></article>
+            <article class="stat-card"><span>Участники</span><strong id="participantCount">—</strong><small>Анкета участника</small></article>
+            <article class="stat-card"><span>Служители</span><strong id="servantCount">—</strong><small>Анкета служителя</small></article>
+        </section>
+
+        <section class="registrations" id="registrations">
+            <div class="section-heading">
+                <div><p class="eyebrow">TRES DIAS DATABASE</p><h2>Все анкеты</h2></div>
+                <div class="section-actions"><button id="exportButton">↓ Экспорт Excel</button><button id="refreshButton">↻ Обновить</button></div>
+            </div>
+            <div class="toolbar">
+                <input type="search" id="searchInput" placeholder="Имя, телефон, церковь или город..." aria-label="Поиск по анкетам">
+                <div class="filters" aria-label="Фильтр по типу анкеты">
+                    <button class="filter active" data-filter="all">Все</button>
+                    <button class="filter" data-filter="participant">Участники</button>
+                    <button class="filter" data-filter="servant">Служители</button>
+                </div>
+            </div>
+            <p id="loadingMessage">Загружаем анкеты TRES DIAS...</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>ИМЯ</th><th>АНКЕТА</th><th>ГОРОД</th><th>ТЕЛЕФОН</th><th>РАЗМЕР</th><th>ДАТА РЕГИСТРАЦИИ</th><th></th></tr></thead>
+                    <tbody id="registrationTable"></tbody>
+                </table>
+            </div>
+            <div id="emptyMessage" hidden>Пока нет отправленных анкет TRES DIAS. Анкеты лагеря находятся в соседнем разделе.</div>
+        </section>
+    </main>
+</div>
+
+<div class="modal-overlay" id="registrationModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-header"><div><p class="eyebrow">TRES DIAS 2027</p><h2 id="modalTitle">Ответы анкеты</h2></div><button class="modal-close" id="closeModalButton" aria-label="Закрыть">&times;</button></div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer"><button class="modal-close-button" id="closeModalFooter">Закрыть</button></div>
+    </div>
+</div>
+</body>
+</html>

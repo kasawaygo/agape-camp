@@ -1,1 +1,25 @@
-*{box-sizing:border-box}body{margin:0;padding:26px 16px;background:#f0efff;color:#26242d;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.admin{max-width:1050px;margin:auto}header{display:flex;justify-content:space-between;align-items:center;gap:18px;background:#fff;border-top:7px solid #5c4be7;border-radius:10px;padding:20px 24px}header a{color:#5546dc;text-decoration:none;font-weight:650}header p{color:#5849dd;font-weight:800;letter-spacing:.1em;font-size:.8rem;margin:14px 0 0}h1{font-size:1.8rem;margin:5px 0}.actions,.filters{display:flex;gap:10px;align-items:center}.button,button{border:0;border-radius:6px;padding:11px 15px;background:#5949e1;color:#fff;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}.actions button{background:#eeeef4;color:#282733}.filters{margin:18px 0}.filters input{flex:1}.filters input,.filters select{min-width:0;border:1px solid #d3d1db;border-radius:6px;padding:12px;font:inherit;background:#fff}.cards{display:grid;gap:12px}.card{background:#fff;border:1px solid #dedde7;border-radius:9px;padding:18px 20px}.card h2{font-size:1.1rem;margin:7px 0}.tag{display:inline-block;background:#efedff;color:#4c3dd5;border-radius:20px;padding:4px 9px;font-size:.8rem;font-weight:750}.card p{margin:7px 0;overflow-wrap:anywhere}.card summary{margin:12px 0 7px;color:#5143dc;font-weight:700;cursor:pointer}.card button{background:#a72c29;margin-top:12px;padding:8px 12px}.empty{color:#676571}@media(max-width:600px){header{align-items:flex-start;flex-direction:column}.actions{width:100%;flex-wrap:wrap}.filters{align-items:stretch;flex-direction:column}.filters input,.filters select{width:100%}}
+#refreshButton {
+    padding: 10px 15px;
+    border: 1px solid #dfd2c6;
+    background: #fff;
+    color: #625c55;
+    border-radius: 7px;
+    font-size: 13px;
+}
+
+#refreshButton:hover { background: #f7f2ec; }
+
+#emptyMessage {
+    padding: 28px 18px;
+    color: #817970;
+    text-align: center;
+}
+
+.table-wrapper { min-width: 0; }
+.table-wrapper td:last-child { white-space: nowrap; }
+
+@media (max-width: 650px) {
+    .table-wrapper table { min-width: 760px; }
+    .filters { flex-wrap: wrap; }
+    .filter { flex: 1 1 auto; }
+}
