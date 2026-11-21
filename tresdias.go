@@ -15,24 +15,25 @@ import (
 )
 
 type TresDiasRegistration struct {
-	ID                  string    `json:"id"`
-	FormType            string    `json:"formType"`
-	Name                string    `json:"name"`
-	BirthDate           string    `json:"birthDate"`
-	City                string    `json:"city"`
-	Phone               string    `json:"phone"`
-	Telegram            string    `json:"telegram"`
-	Church              string    `json:"church"`
-	AttendedBefore      *bool     `json:"attendedBefore"`
-	ClothingSize        string    `json:"clothingSize"`
-	HasAllergies        *bool     `json:"hasAllergies"`
-	AllergyDetails      string    `json:"allergyDetails"`
-	PersonalDataConsent *bool     `json:"personalDataConsent"`
-	NeedsTransport      *bool     `json:"needsTransport"`
-	Departments         []string  `json:"departments"`
-	PreviousDepartments string    `json:"previousDepartments"`
-	ReadRoe             string    `json:"readRoe"`
-	CreatedAt           time.Time `json:"createdAt"`
+	ID                     string    `json:"id"`
+	FormType               string    `json:"formType"`
+	Name                   string    `json:"name"`
+	BirthDate              string    `json:"birthDate"`
+	City                   string    `json:"city"`
+	Phone                  string    `json:"phone"`
+	Telegram               string    `json:"telegram"`
+	Church                 string    `json:"church"`
+	AttendedBefore         *bool     `json:"attendedBefore"`
+	ClothingSize           string    `json:"clothingSize"`
+	HasAllergies           *bool     `json:"hasAllergies"`
+	AllergyDetails         string    `json:"allergyDetails"`
+	PersonalDataConsent    *bool     `json:"personalDataConsent"`
+	NeedsTransport         *bool     `json:"needsTransport"`
+	CloseOnesParticipating *bool     `json:"closeOnesParticipating"`
+	Departments            []string  `json:"departments"`
+	PreviousDepartments    string    `json:"previousDepartments"`
+	ReadRoe                string    `json:"readRoe"`
+	CreatedAt              time.Time `json:"createdAt"`
 }
 
 var tresDiasSizes = map[string]bool{"S": true, "M": true, "L": true, "XL": true, "2XL": true, "3XL": true, "4XL": true, "5XL": true}
@@ -40,7 +41,8 @@ var tresDiasSizes = map[string]bool{"S": true, "M": true, "L": true, "XL": true,
 func ensureTresDiasTransportColumn(ctx context.Context, pool *pgxpool.Pool) error {
 	_, err := pool.Exec(ctx, `ALTER TABLE public.tres_dias_registrations
 		ADD COLUMN IF NOT EXISTS needs_transport boolean,
-		ADD COLUMN IF NOT EXISTS personal_data_consent boolean`)
+		ADD COLUMN IF NOT EXISTS personal_data_consent boolean,
+		ADD COLUMN IF NOT EXISTS close_ones_participating boolean`)
 	return err
 }
 
@@ -92,10 +94,14 @@ func validateTresDiasRegistration(r *TresDiasRegistration, requireTransport bool
 		r.PreviousDepartments = ""
 		r.ReadRoe = ""
 		r.NeedsTransport = nil
+		r.CloseOnesParticipating = nil
 		return ""
 	}
 	if requireTransport && r.NeedsTransport == nil {
 		return "Укажи, нужен ли тебе транспорт."
+	}
+	if requireTransport && r.CloseOnesParticipating == nil {
+		return "Ответь, едут ли с тобой близкие люди."
 	}
 	r.AttendedBefore = nil
 	allowed := map[string]bool{"Administration": true, "Decoration": true, "Kitchen (еда)": true, "Kitchen (сценки)": true, "Palanka": true, "Room control": true, "Rollo room": true, "Song Team": true, "Chapel": true, "Set up": true}
@@ -171,7 +177,7 @@ func registerTresDiasRoutes(mux *http.ServeMux, pool *pgxpool.Pool) {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"message": "Укажи Telegram username начиная с @."})
 			return
 		}
-		_, err := pool.Exec(r.Context(), `INSERT INTO public.tres_dias_registrations (form_type,name,birth_date,city,phone,telegram,church,attended_before,clothing_size,departments,previous_departments,read_roe,has_allergies,allergy_details,allergy_consent,personal_data_consent,needs_transport) VALUES ($1,$2,NULLIF($3,'')::date,$4,$5,$6,$7,$8,$9,$10,NULLIF($11,''),$12,$13,NULLIF($14,''),$15,$16,$17)`, reg.FormType, reg.Name, reg.BirthDate, reg.City, reg.Phone, reg.Telegram, reg.Church, reg.AttendedBefore, reg.ClothingSize, reg.Departments, reg.PreviousDepartments, reg.ReadRoe, reg.HasAllergies, reg.AllergyDetails, *reg.PersonalDataConsent, *reg.PersonalDataConsent, reg.NeedsTransport)
+		_, err := pool.Exec(r.Context(), `INSERT INTO public.tres_dias_registrations (form_type,name,birth_date,city,phone,telegram,church,attended_before,clothing_size,departments,previous_departments,read_roe,has_allergies,allergy_details,allergy_consent,personal_data_consent,needs_transport,close_ones_participating) VALUES ($1,$2,NULLIF($3,'')::date,$4,$5,$6,$7,$8,$9,$10,NULLIF($11,''),$12,$13,NULLIF($14,''),$15,$16,$17,$18)`, reg.FormType, reg.Name, reg.BirthDate, reg.City, reg.Phone, reg.Telegram, reg.Church, reg.AttendedBefore, reg.ClothingSize, reg.Departments, reg.PreviousDepartments, reg.ReadRoe, reg.HasAllergies, reg.AllergyDetails, *reg.PersonalDataConsent, *reg.PersonalDataConsent, reg.NeedsTransport, reg.CloseOnesParticipating)
 		if err != nil {
 			log.Printf("TRES DIAS registration insert failed: %v", err)
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": "Не удалось сохранить анкету. Попробуй ещё раз."})
@@ -235,7 +241,7 @@ func registerTresDiasRoutes(mux *http.ServeMux, pool *pgxpool.Pool) {
 				return
 			}
 			reg.PersonalDataConsent = personalDataConsent
-			tag, err := pool.Exec(r.Context(), `UPDATE public.tres_dias_registrations SET name=$2,birth_date=NULLIF($3,'')::date,city=$4,phone=$5,telegram=NULLIF($6,''),church=$7,attended_before=COALESCE($8,attended_before),clothing_size=$9,departments=$10,previous_departments=NULLIF($11,''),read_roe=NULLIF($12,''),has_allergies=$13,allergy_details=NULLIF($14,''),personal_data_consent=COALESCE($15,personal_data_consent),needs_transport=$16 WHERE id=$1 AND form_type=$17`, id, reg.Name, reg.BirthDate, reg.City, reg.Phone, reg.Telegram, reg.Church, reg.AttendedBefore, reg.ClothingSize, reg.Departments, reg.PreviousDepartments, reg.ReadRoe, reg.HasAllergies, reg.AllergyDetails, reg.PersonalDataConsent, reg.NeedsTransport, reg.FormType)
+			tag, err := pool.Exec(r.Context(), `UPDATE public.tres_dias_registrations SET name=$2,birth_date=NULLIF($3,'')::date,city=$4,phone=$5,telegram=NULLIF($6,''),church=$7,attended_before=COALESCE($8,attended_before),clothing_size=$9,departments=$10,previous_departments=NULLIF($11,''),read_roe=NULLIF($12,''),has_allergies=$13,allergy_details=NULLIF($14,''),personal_data_consent=COALESCE($15,personal_data_consent),needs_transport=$16,close_ones_participating=COALESCE($17,close_ones_participating) WHERE id=$1 AND form_type=$18`, id, reg.Name, reg.BirthDate, reg.City, reg.Phone, reg.Telegram, reg.Church, reg.AttendedBefore, reg.ClothingSize, reg.Departments, reg.PreviousDepartments, reg.ReadRoe, reg.HasAllergies, reg.AllergyDetails, reg.PersonalDataConsent, reg.NeedsTransport, reg.CloseOnesParticipating, reg.FormType)
 			if err != nil {
 				log.Printf("TRES DIAS registration update failed: %v", err)
 				writeJSON(w, http.StatusInternalServerError, map[string]string{"message": "Не удалось сохранить изменения анкеты."})
@@ -269,7 +275,7 @@ func registerTresDiasRoutes(mux *http.ServeMux, pool *pgxpool.Pool) {
 		_ = book.SetSheetName("Sheet1", "TRES DIAS 2027")
 		_, _ = book.NewSheet("Участники")
 		_, _ = book.NewSheet("Служители")
-		headers := []any{"ID", "Анкета", "ФИО", "Дата рождения", "Город", "Телефон", "Telegram", "Церковь", "Раньше участвовал(а)", "Размер", "Департаменты", "Прошлое служение", "Рое", "Аллергии", "Подробности аллергии", "Согласие на обработку персональных данных", "Нужен транспорт", "Дата регистрации"}
+		headers := []any{"ID", "Анкета", "ФИО", "Дата рождения", "Город", "Телефон", "Telegram", "Церковь", "Раньше участвовал(а)", "Размер", "Департаменты", "Прошлое служение", "Рое", "Аллергии", "Подробности аллергии", "Согласие на обработку персональных данных", "Нужен транспорт", "Родственники/друзья/ячейка едут участниками", "Дата регистрации"}
 		for _, sheet := range []string{"TRES DIAS 2027", "Участники", "Служители"} {
 			for col, value := range headers {
 				cell, _ := excelize.CoordinatesToCellName(col+1, 1)
@@ -313,7 +319,14 @@ func registerTresDiasRoutes(mux *http.ServeMux, pool *pgxpool.Pool) {
 					transport = "Да"
 				}
 			}
-			data := []any{item.ID, tresDiasLabel(item.FormType), item.Name, dateText, item.City, item.Phone, item.Telegram, item.Church, attended, item.ClothingSize, strings.Join(item.Departments, ", "), item.PreviousDepartments, item.ReadRoe, allergies, item.AllergyDetails, consent, transport, item.CreatedAt.Format("02.01.2006 15:04")}
+			closeOnes := "Не указано"
+			if item.CloseOnesParticipating != nil {
+				closeOnes = "Нет"
+				if *item.CloseOnesParticipating {
+					closeOnes = "Да"
+				}
+			}
+			data := []any{item.ID, tresDiasLabel(item.FormType), item.Name, dateText, item.City, item.Phone, item.Telegram, item.Church, attended, item.ClothingSize, strings.Join(item.Departments, ", "), item.PreviousDepartments, item.ReadRoe, allergies, item.AllergyDetails, consent, transport, closeOnes, item.CreatedAt.Format("02.01.2006 15:04")}
 			individualSheet := "Участники"
 			if item.FormType == "servant" {
 				individualSheet = "Служители"
@@ -327,7 +340,7 @@ func registerTresDiasRoutes(mux *http.ServeMux, pool *pgxpool.Pool) {
 			}
 		}
 		for _, sheet := range []string{"TRES DIAS 2027", "Участники", "Служители"} {
-			_ = book.SetColWidth(sheet, "A", "R", 20)
+			_ = book.SetColWidth(sheet, "A", "S", 20)
 			_ = book.SetColWidth(sheet, "O", "O", 40)
 		}
 		var out bytes.Buffer
@@ -355,7 +368,7 @@ func isAgapeAdmin(r *http.Request) bool {
 }
 
 func listTresDiasRegistrations(ctx context.Context, pool *pgxpool.Pool) ([]TresDiasRegistration, error) {
-	rows, err := pool.Query(ctx, `SELECT id::text,form_type,name,COALESCE(birth_date::text,''),city,phone,COALESCE(telegram,''),church,attended_before,clothing_size,departments,COALESCE(previous_departments,''),COALESCE(read_roe,''),has_allergies,COALESCE(allergy_details,''),personal_data_consent,needs_transport,created_at FROM public.tres_dias_registrations ORDER BY created_at DESC`)
+	rows, err := pool.Query(ctx, `SELECT id::text,form_type,name,COALESCE(birth_date::text,''),city,phone,COALESCE(telegram,''),church,attended_before,clothing_size,departments,COALESCE(previous_departments,''),COALESCE(read_roe,''),has_allergies,COALESCE(allergy_details,''),personal_data_consent,needs_transport,close_ones_participating,created_at FROM public.tres_dias_registrations ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, err
 	}
@@ -363,7 +376,7 @@ func listTresDiasRegistrations(ctx context.Context, pool *pgxpool.Pool) ([]TresD
 	items := make([]TresDiasRegistration, 0)
 	for rows.Next() {
 		var item TresDiasRegistration
-		if err := rows.Scan(&item.ID, &item.FormType, &item.Name, &item.BirthDate, &item.City, &item.Phone, &item.Telegram, &item.Church, &item.AttendedBefore, &item.ClothingSize, &item.Departments, &item.PreviousDepartments, &item.ReadRoe, &item.HasAllergies, &item.AllergyDetails, &item.PersonalDataConsent, &item.NeedsTransport, &item.CreatedAt); err != nil {
+		if err := rows.Scan(&item.ID, &item.FormType, &item.Name, &item.BirthDate, &item.City, &item.Phone, &item.Telegram, &item.Church, &item.AttendedBefore, &item.ClothingSize, &item.Departments, &item.PreviousDepartments, &item.ReadRoe, &item.HasAllergies, &item.AllergyDetails, &item.PersonalDataConsent, &item.NeedsTransport, &item.CloseOnesParticipating, &item.CreatedAt); err != nil {
 			return nil, err
 		}
 		if item.Departments == nil {

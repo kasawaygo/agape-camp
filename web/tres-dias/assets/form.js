@@ -24,6 +24,43 @@ document.querySelectorAll('[data-form]').forEach(form => {
     allergyRadios.forEach(input => input.addEventListener('change', syncAllergy));
     syncAllergy();
 
+    const closeOnesRadios = [...form.querySelectorAll('input[name="closeOnesParticipating"]')];
+    const mananita = form.querySelector('.mananita-reveal');
+    const firstConfirm = form.querySelector('.cancel-confirm:not(.cancel-confirm-final)');
+    const finalConfirm = form.querySelector('.cancel-confirm-final');
+    const syncMananita = () => {
+        const yes = form.querySelector('[name="closeOnesParticipating"]:checked')?.value === 'true';
+        if (mananita) mananita.hidden = !yes;
+        if (!yes) {
+            if (firstConfirm) firstConfirm.hidden = true;
+            if (finalConfirm) finalConfirm.hidden = true;
+        }
+    };
+    closeOnesRadios.forEach(input => input.addEventListener('change', syncMananita));
+    syncMananita();
+    form.querySelector('.cancel-yes')?.addEventListener('click', () => {
+        if (firstConfirm) firstConfirm.hidden = false;
+    });
+    form.querySelectorAll('[data-cancel-step]').forEach(button => button.addEventListener('click', () => {
+        const step = button.dataset.cancelStep;
+        if (step === '1') {
+            if (firstConfirm) firstConfirm.hidden = true;
+            if (finalConfirm) finalConfirm.hidden = false;
+        } else if (step === '2') {
+            closeOnesRadios.forEach(input => { input.checked = false; });
+            syncMananita();
+        } else {
+            if (firstConfirm) firstConfirm.hidden = true;
+            if (finalConfirm) finalConfirm.hidden = true;
+        }
+    }));
+    form.querySelector('.ghost-service')?.addEventListener('click', event => {
+        const button = event.currentTarget;
+        button.classList.add('ghost-service-away');
+        button.disabled = true;
+        window.setTimeout(() => button.remove(), 800);
+    });
+
     form.addEventListener('submit', async event => {
         event.preventDefault();
         message.className = 'form-message';
@@ -54,6 +91,7 @@ document.querySelectorAll('[data-form]').forEach(form => {
             church: data.get('church'),
             clothingSize: data.get('clothingSize'),
             needsTransport: data.has('needsTransport') ? data.get('needsTransport') === 'true' : null,
+            closeOnesParticipating: data.has('closeOnesParticipating') ? data.get('closeOnesParticipating') === 'true' : null,
             hasAllergies: data.get('hasAllergies') === 'true',
             allergyDetails: data.get('allergyDetails') || '',
             personalDataConsent: data.has('personalDataConsent'),
@@ -74,6 +112,7 @@ document.querySelectorAll('[data-form]').forEach(form => {
             if (!response.ok) throw new Error(result.message || 'Не получилось отправить анкету.');
             form.reset();
             syncAllergy();
+            syncMananita();
             message.textContent = result.message;
             message.classList.add('success');
         } catch (error) {

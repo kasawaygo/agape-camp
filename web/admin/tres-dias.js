@@ -125,6 +125,7 @@ function showDetails(item) {
         ...(item.attendedBefore == null ? [] : [["Раньше участвовал(а)", item.attendedBefore ? "Да" : "Нет"]]),
         ["Размер одежды", item.clothingSize],
         ...(item.formType === "servant" ? [["Нужен транспорт", item.needsTransport == null ? "Не указано" : item.needsTransport ? "Да" : "Нет"]] : []),
+        ...(item.formType === "servant" ? [["Родственники, друзья или ячейка едут участниками", item.closeOnesParticipating == null ? "Не указано" : item.closeOnesParticipating ? "Да" : "Нет"]] : []),
         ["Департаменты", (item.departments || []).join(", ") || "—"],
         ["Предыдущее служение", item.previousDepartments], ["Читал(а) Рое", item.readRoe],
         ["Аллергии", item.hasAllergies == null ? "Не указано (старая анкета)" : item.hasAllergies ? "Да" : "Нет"],
@@ -161,6 +162,7 @@ function showEditor(item) {
             <label class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><span>Предыдущее служение *</span><textarea name="previousDepartments" rows="3" maxlength="1200"></textarea></label>
             <label class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><span>Читал(а) Рое? *</span><textarea name="readRoe" rows="3" maxlength="1200"></textarea></label>
             <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Нужен ли транспорт? *</legend><label class="radio"><input type="radio" name="needsTransport" value="true" ${item.needsTransport == null ? "" : "required"}> Да</label><label class="radio"><input type="radio" name="needsTransport" value="false" ${item.needsTransport == null ? "" : "required"}> Нет</label></fieldset>
+            <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Едут ли родственники, близкие друзья или члены ячейки? *</legend><label class="radio"><input type="radio" name="closeOnesParticipating" value="true" ${item.closeOnesParticipating == null ? "" : "required"}> Да</label><label class="radio"><input type="radio" name="closeOnesParticipating" value="false" ${item.closeOnesParticipating == null ? "" : "required"}> Нет</label></fieldset>
             <fieldset class="edit-field"><legend>Есть ли аллергии? *</legend><label class="radio"><input type="radio" name="hasAllergies" value="false" required> Нет</label><label class="radio"><input type="radio" name="hasAllergies" value="true"> Да</label><small>Если да, перечисли аллергены.</small><textarea name="allergyDetails" rows="3" maxlength="1500" placeholder="Аллергены и важные подробности"></textarea></fieldset>
             <p class="edit-message" aria-live="polite"></p>
             <div class="edit-actions"><button type="submit">Сохранить изменения</button><button type="button" class="modal-close-button" id="cancelEditButton">Отмена</button></div>
@@ -178,6 +180,7 @@ function showEditor(item) {
     (item.departments || []).forEach(value => { const checkbox = [...form.querySelectorAll('[name="departments"]')].find(input => input.value === value); if (checkbox) checkbox.checked = true; });
     if (item.hasAllergies != null) form.querySelector(`[name="hasAllergies"][value="${item.hasAllergies}"]`).checked = true;
     if (item.needsTransport != null) form.querySelector(`[name="needsTransport"][value="${item.needsTransport}"]`).checked = true;
+    if (item.closeOnesParticipating != null) form.querySelector(`[name="closeOnesParticipating"][value="${item.closeOnesParticipating}"]`).checked = true;
     form.elements.allergyDetails.value = item.allergyDetails || "";
     syncEditorAllergy(form);
     form.elements.birthDate.addEventListener("input", event => {
@@ -215,6 +218,7 @@ async function saveEdit(event, item, form) {
         attendedBefore: item.attendedBefore,
         clothingSize: data.get("clothingSize"), departments,
         needsTransport: data.has("needsTransport") ? data.get("needsTransport") === "true" : null,
+        closeOnesParticipating: data.has("closeOnesParticipating") ? data.get("closeOnesParticipating") === "true" : null,
         previousDepartments: data.get("previousDepartments") || "", readRoe: data.get("readRoe") || "",
         hasAllergies: allergyChoice === "true", allergyDetails: data.get("allergyDetails") || "",
     };
