@@ -18,10 +18,10 @@ CREATE TABLE IF NOT EXISTS public.tres_dias_registrations (
     read_roe text,
     created_at timestamptz NOT NULL DEFAULT now(),
     CONSTRAINT tres_dias_registration_fields CHECK (
-        (form_type = 'participant' AND birth_date IS NOT NULL AND attended_before IS NOT NULL
+        (form_type = 'participant' AND birth_date IS NOT NULL
             AND cardinality(departments) = 0 AND previous_departments IS NULL AND read_roe IS NULL)
         OR
-        (form_type = 'servant' AND attended_before IS NULL AND cardinality(departments) BETWEEN 2 AND 3
+        (form_type = 'servant' AND attended_before IS NULL AND cardinality(departments) BETWEEN 1 AND 10
             AND previous_departments IS NOT NULL AND read_roe IS NOT NULL)
     )
 );

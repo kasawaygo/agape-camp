@@ -65,14 +65,15 @@ func validateTresDiasRegistration(r *TresDiasRegistration) string {
 		return "Проверь номер телефона."
 	}
 	if r.BirthDate != "" {
-		date, err := time.Parse("2006-01-02", r.BirthDate)
+		date, err := time.Parse("2006.01.02", r.BirthDate)
 		if err != nil || date.After(time.Now()) {
-			return "Проверь дату рождения."
+			return "Проверь дату рождения. Используй формат ГГГГ.ММ.ДД."
 		}
+		r.BirthDate = date.Format("2006-01-02")
 	}
 	if r.FormType == "participant" {
-		if r.BirthDate == "" || r.AttendedBefore == nil {
-			return "Укажи дату рождения и ответь, участвовал(а) ли ты раньше в TRES DIAS."
+		if r.BirthDate == "" {
+			return "Укажи дату рождения в формате ГГГГ.ММ.ДД."
 		}
 		r.Departments = []string{}
 		r.PreviousDepartments = ""
@@ -80,10 +81,10 @@ func validateTresDiasRegistration(r *TresDiasRegistration) string {
 		return ""
 	}
 	r.AttendedBefore = nil
-	if len(r.Departments) < 2 || len(r.Departments) > 3 {
-		return "Выбери от 2 до 3 департаментов."
-	}
 	allowed := map[string]bool{"Administration": true, "Decoration": true, "Kitchen (еда)": true, "Kitchen (сценки)": true, "Palanka": true, "Room control": true, "Rollo room": true, "Song Team": true, "Chapel": true, "Set up": true}
+	if len(r.Departments) < 1 || len(r.Departments) > len(allowed) {
+		return "Выбери от 1 до 10 департаментов."
+	}
 	seen := map[string]bool{}
 	for i, item := range r.Departments {
 		r.Departments[i] = strings.TrimSpace(item)
@@ -188,6 +189,41 @@ func registerTresDiasRoutes(mux *http.ServeMux, pool *pgxpool.Pool) {
 				return
 			}
 			writeJSON(w, http.StatusOK, map[string]string{"message": "Анкета удалена."})
+		case http.MethodPut:
+			id := strings.TrimSpace(r.URL.Query().Get("id"))
+			if id == "" {
+				writeJSON(w, http.StatusBadRequest, map[string]string{"message": "Не указан ID анкеты."})
+				return
+			}
+			r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+			var reg TresDiasRegistration
+			dec := json.NewDecoder(r.Body)
+			dec.DisallowUnknownFields()
+			if err := dec.Decode(&reg); err != nil {
+				writeJSON(w, http.StatusBadRequest, map[string]string{"message": "Некорректные данные анкеты."})
+				return
+			}
+			// Editing an existing response does not mean the admin is collecting
+			// consent again. Keep the submitted consent value as-is while using
+			// the normal validation rules for all other fields.
+			allergyConsent := reg.AllergyConsent
+			reg.AllergyConsent = true
+			if message := validateTresDiasRegistration(&reg); message != "" {
+				writeJSON(w, http.StatusBadRequest, map[string]string{"message": message})
+				return
+			}
+			reg.AllergyConsent = allergyConsent
+			tag, err := pool.Exec(r.Context(), `UPDATE public.tres_dias_registrations SET name=$2,birth_date=NULLIF($3,'')::date,city=$4,phone=$5,church=$6,attended_before=COALESCE($7,attended_before),clothing_size=$8,departments=$9,previous_departments=NULLIF($10,''),read_roe=NULLIF($11,''),has_allergies=$12,allergy_details=NULLIF($13,''),allergy_consent=$14 WHERE id=$1 AND form_type=$15`, id, reg.Name, reg.BirthDate, reg.City, reg.Phone, reg.Church, reg.AttendedBefore, reg.ClothingSize, reg.Departments, reg.PreviousDepartments, reg.ReadRoe, reg.HasAllergies, reg.AllergyDetails, reg.AllergyConsent, reg.FormType)
+			if err != nil {
+				log.Printf("TRES DIAS registration update failed: %v", err)
+				writeJSON(w, http.StatusInternalServerError, map[string]string{"message": "Не удалось сохранить изменения анкеты."})
+				return
+			}
+			if tag.RowsAffected() == 0 {
+				writeJSON(w, http.StatusNotFound, map[string]string{"message": "Анкета не найдена."})
+				return
+			}
+			writeJSON(w, http.StatusOK, map[string]string{"message": "Изменения сохранены."})
 		default:
 			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"message": "Method not allowed"})
 		}
@@ -231,7 +267,7 @@ func registerTresDiasRoutes(mux *http.ServeMux, pool *pgxpool.Pool) {
 			date, _ := time.Parse("2006-01-02", item.BirthDate)
 			dateText := ""
 			if !date.IsZero() {
-				dateText = date.Format("02.01.2006")
+				dateText = date.Format("2006.01.02")
 			}
 			allergies := "Не указано"
 			if item.HasAllergies != nil {
