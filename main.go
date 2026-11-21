@@ -1014,7 +1014,7 @@ func main() {
 				name,
 				phone,
 				telegram,
-				birthDate.Format("2006-01-02"),
+				birthDate.Format("2006.01.02"),
 				church,
 				dreamValue,
 				parentValue,

@@ -8,11 +8,6 @@ function attachBirthDateFormat(input) {
     });
 }
 
-function dateForServer(value) {
-    const match = /^(\d{4})\.(\d{2})\.(\d{2})$/.exec(value || "");
-    return match ? `${match[1]}-${match[2]}-${match[3]}` : "";
-}
-
 document.querySelectorAll('[data-form]').forEach(form => {
     const message = form.querySelector('.form-message');
     const checks = [...form.querySelectorAll('input[name="departments"]')];
@@ -42,8 +37,8 @@ document.querySelectorAll('[data-form]').forEach(form => {
         }
         if (warning) warning.hidden = true;
         const data = new FormData(form);
-        const birthDate = dateForServer(data.get('birthDate'));
-        if (dateInput?.value && !birthDate) {
+        const birthDate = (data.get('birthDate') || '').trim();
+        if (dateInput?.value && !/^\d{4}\.\d{2}\.\d{2}$/.test(birthDate)) {
             dateInput.setCustomValidity('Введи дату как ГГГГ.ММ.ДД, например 2000.01.09.');
             dateInput.reportValidity();
             dateInput.setCustomValidity('');

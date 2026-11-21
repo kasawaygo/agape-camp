@@ -105,11 +105,6 @@ function inputBirthDate(value) {
     return /^\d{4}-\d{2}-\d{2}$/.test(value || "") ? value.replaceAll("-", ".") : "";
 }
 
-function dateToISO(value) {
-    const match = /^(\d{4})\.(\d{2})\.(\d{2})$/.exec(value || "");
-    return match ? `${match[1]}-${match[2]}-${match[3]}` : "";
-}
-
 function displayBirthDate(value) {
     return inputBirthDate(value) || "—";
 }
@@ -212,7 +207,7 @@ async function saveEdit(event, item, form) {
     const payload = {
         formType: item.formType,
         name: data.get("name"),
-        birthDate: dateToISO(data.get("birthDate")),
+        birthDate: (data.get("birthDate") || "").trim(),
         city: data.get("city"), phone: data.get("phone"), telegram: data.get("telegram"), church: data.get("church"),
         attendedBefore: item.attendedBefore,
         clothingSize: data.get("clothingSize"), departments,
@@ -221,7 +216,7 @@ async function saveEdit(event, item, form) {
         allergyConsent: data.has("allergyConsent")
     };
     const dateInput = form.elements.birthDate;
-    if (dateInput.value && !payload.birthDate) { dateInput.setCustomValidity("Введи дату как ГГГГ.ММ.ДД."); dateInput.reportValidity(); dateInput.setCustomValidity(""); return; }
+    if (dateInput.value && !/^\d{4}\.\d{2}\.\d{2}$/.test(payload.birthDate)) { dateInput.setCustomValidity("Введи дату как ГГГГ.ММ.ДД."); dateInput.reportValidity(); dateInput.setCustomValidity(""); return; }
     const button = form.querySelector('[type="submit"]'); button.disabled = true; button.textContent = "Сохраняем…";
     try {
         const response = await fetch(`/api/admin/tres-dias/registrations?id=${encodeURIComponent(item.id)}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });

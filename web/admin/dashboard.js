@@ -242,6 +242,10 @@ function showRegistration(item) {
     document.body.style.overflow = "hidden";
 }
 
+function formatBirthDate(value) {
+    return (value || "").replace(/^(\d{4})-(\d{2})-(\d{2})$/, "$1.$2.$3") || "—";
+}
+
 function addSection(title, fields) {
     const section = document.createElement("section");
     section.className = "modal-section";
@@ -278,6 +282,20 @@ function addInput(container, label, name, value, type = "text") {
     input.type = type;
     input.name = name;
     input.value = value || "";
+    if (name === "birthDate") {
+        input.type = "text";
+        input.inputMode = "numeric";
+        input.maxLength = 10;
+        input.pattern = "[0-9]{4}\\.[0-9]{2}\\.[0-9]{2}";
+        input.placeholder = "ГГГГ.ММ.ДД";
+        input.value = input.value.replace(/^(\d{4})-(\d{2})-(\d{2})$/, "$1.$2.$3");
+        input.addEventListener("input", () => {
+            const digits = input.value.replace(/\D/g, "").slice(0, 8);
+            input.value = digits.length > 4
+                ? `${digits.slice(0, 4)}.${digits.slice(4, 6)}${digits.length > 6 ? `.${digits.slice(6)}` : ""}`
+                : digits;
+        });
+    }
 
     wrapper.append(caption, input);
     container.appendChild(wrapper);
@@ -318,7 +336,7 @@ function renderRegistrationDetails() {
             ["Имя", item.name],
             ["Телефон", item.phone],
             ["Telegram", item.telegram],
-            ["Дата рождения", item.birthDate],
+            ["Дата рождения", formatBirthDate(item.birthDate)],
             ["Церковь", item.church]
         ]);
 
@@ -352,7 +370,7 @@ function renderRegistrationDetails() {
     addInput(form, "Имя", "name", item.name);
     addInput(form, "Телефон", "phone", item.phone);
     addInput(form, "Telegram", "telegram", item.telegram);
-    addInput(form, "Дата рождения", "birthDate", item.birthDate, "date");
+    addInput(form, "Дата рождения (ГГГГ.ММ.ДД)", "birthDate", item.birthDate);
     addInput(form, "Церковь", "church", item.church);
 
     if (isParticipant) {
@@ -414,7 +432,7 @@ async function saveRegistration() {
         name: formData.get("name").trim(),
         phone: formData.get("phone").trim(),
         telegram: formData.get("telegram").trim(),
-        birthDate: formData.get("birthDate"),
+        birthDate: (formData.get("birthDate") || "").replace(/^(\d{4})\.(\d{2})\.(\d{2})$/, "$1-$2-$3"),
         church: formData.get("church").trim(),
         dream: formData.get("dream") || "",
         parentPhone: formData.get("parentPhone") || "",

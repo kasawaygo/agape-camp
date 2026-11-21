@@ -77,8 +77,11 @@
 
                     <div class="field">
                         <label for="birthDate">Дата рождения *</label>
-                        <input id="birthDate" name="birthDate"
-                               type="date" required>
+                        <input id="birthDate" name="birthDate" type="text"
+                               inputmode="numeric" autocomplete="bday" maxlength="10"
+                               pattern="[0-9]{4}\.[0-9]{2}\.[0-9]{2}"
+                               placeholder="ГГГГ.ММ.ДД" aria-describedby="birthDateHint" required>
+                        <small id="birthDateHint">Формат: год.месяц.день, например 2000.01.09.</small>
                     </div>
 
                     <div class="field" id="parentPhoneField" hidden>
@@ -261,6 +264,6 @@
 
     </main>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=20261121-4"></script>
 </body>
 </html>

@@ -4,6 +4,13 @@ const parentPhoneField = document.querySelector("#parentPhoneField");
 const parentPhoneInput = document.querySelector("#parentPhone");
 
 const form = document.querySelector("#registrationForm");
+const birthDateInput = document.querySelector("#birthDate");
+birthDateInput.addEventListener("input", () => {
+    const digits = birthDateInput.value.replace(/\D/g, "").slice(0, 8);
+    birthDateInput.value = digits.length > 4
+        ? `${digits.slice(0, 4)}.${digits.slice(4, 6)}${digits.length > 6 ? `.${digits.slice(6)}` : ""}`
+        : digits;
+});
 
 const roleCards = document.querySelectorAll(".role-card");
 const dreamField = document.querySelector("#dreamField");
@@ -170,12 +177,20 @@ form.addEventListener("submit", async event => {
         }
     }
 
+    const dottedBirthDate = birthDateInput.value.trim();
+    if (!/^\d{4}\.\d{2}\.\d{2}$/.test(dottedBirthDate)) {
+        birthDateInput.setCustomValidity("Введи дату как ГГГГ.ММ.ДД, например 2000.01.09.");
+        birthDateInput.reportValidity();
+        birthDateInput.setCustomValidity("");
+        return;
+    }
+
     const data = {
         role: selectedRole.value,
         name: document.querySelector("#name").value.trim(),
         phone: document.querySelector("#phone").value.trim(),
         telegram: telegram,
-        birthDate: document.querySelector("#birthDate").value,
+        birthDate: dottedBirthDate.replaceAll(".", "-"),
         church: document.querySelector("#church").value.trim(),
 
         parentPhone: selectedRole.value === "participant"
