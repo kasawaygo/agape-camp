@@ -55,6 +55,7 @@ document.querySelectorAll('[data-form]').forEach(form => {
             birthDate,
             city: data.get('city'),
             phone: data.get('phone'),
+            telegram: data.get('telegram'),
             church: data.get('church'),
             clothingSize: data.get('clothingSize'),
             hasAllergies: data.get('hasAllergies') === 'true',

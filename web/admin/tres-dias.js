@@ -55,7 +55,7 @@ function renderRegistrations() {
     const query = searchInput.value.trim().toLocaleLowerCase("ru");
     const filtered = registrations.filter(item => {
         const matchesType = currentFilter === "all" || item.formType === currentFilter;
-        const text = [item.name, item.phone, item.church, item.city].join(" ").toLocaleLowerCase("ru");
+        const text = [item.name, item.phone, item.telegram, item.church, item.city].join(" ").toLocaleLowerCase("ru");
         return matchesType && text.includes(query);
     });
     table.replaceChildren();
@@ -70,7 +70,7 @@ function renderRegistrations() {
 
     filtered.forEach(item => {
         const row = document.createElement("tr");
-        const values = [item.name, item.formType === "servant" ? "Служитель" : "Участник", item.city || "—", item.phone || "—", item.clothingSize || "—", formatDate(item.createdAt)];
+        const values = [item.name, item.formType === "servant" ? "Служитель" : "Участник", item.city || "—", item.phone || "—", item.telegram || "—", item.clothingSize || "—", formatDate(item.createdAt)];
         values.forEach((value, index) => {
             const cell = document.createElement("td");
             if (index === 1) {
@@ -125,7 +125,7 @@ function showDetails(item) {
     modalBody.replaceChildren();
     const details = [
         ["ФИО", item.name], ["Тип анкеты", item.formType === "servant" ? "Служитель" : "Участник"],
-        ["Дата рождения", displayBirthDate(item.birthDate)], ["Город", item.city], ["Телефон", item.phone],
+        ["Дата рождения", displayBirthDate(item.birthDate)], ["Город", item.city], ["Телефон", item.phone], ["Telegram", item.telegram],
         ["Церковь", item.church],
         ...(item.attendedBefore == null ? [] : [["Раньше участвовал(а)", item.attendedBefore ? "Да" : "Нет"]]),
         ["Размер одежды", item.clothingSize], ["Департаменты", (item.departments || []).join(", ") || "—"],
@@ -157,6 +157,7 @@ function showEditor(item) {
             <label class="edit-field"><span>Дата рождения ${item.formType === "participant" ? "*" : ""}</span><small>Формат: ГГГГ.ММ.ДД</small><input name="birthDate" type="text" inputmode="numeric" maxlength="10" placeholder="ГГГГ.ММ.ДД" ${item.formType === "participant" ? "required" : ""}></label>
             <label class="edit-field"><span>Город *</span><input name="city" maxlength="100" required></label>
             <label class="edit-field"><span>Телефон *</span><input name="phone" type="tel" required></label>
+            <label class="edit-field"><span>Telegram</span><input name="telegram" type="text" placeholder="@username" autocomplete="off" autocapitalize="none" spellcheck="false" minlength="6" maxlength="33" pattern="@[A-Za-z][A-Za-z0-9_]{4,31}" title="Укажи Telegram username начиная с @"></label>
             <label class="edit-field"><span>Церковь *</span><input name="church" maxlength="160" required></label>
             <label class="edit-field"><span>Размер одежды *</span><select name="clothingSize" required><option value="">Выбрать</option>${["S","M","L","XL","2XL","3XL","4XL","5XL"].map(size => `<option value="${size}">${size}</option>`).join("")}</select></label>
             <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Департаменты *</legend><small>Можно выбрать от 1 до 10.</small><div class="edit-check-grid">${departmentHtml}</div><p class="inline-error" id="editDepartmentError" hidden>Выбери от 1 до 10 департаментов.</p></fieldset>
@@ -171,6 +172,7 @@ function showEditor(item) {
     form.elements.birthDate.value = inputBirthDate(item.birthDate);
     form.elements.city.value = item.city || "";
     form.elements.phone.value = item.phone || "";
+    form.elements.telegram.value = item.telegram || "";
     form.elements.church.value = item.church || "";
     form.elements.clothingSize.value = item.clothingSize || "";
     form.elements.previousDepartments.value = item.previousDepartments || "";
@@ -211,7 +213,7 @@ async function saveEdit(event, item, form) {
         formType: item.formType,
         name: data.get("name"),
         birthDate: dateToISO(data.get("birthDate")),
-        city: data.get("city"), phone: data.get("phone"), church: data.get("church"),
+        city: data.get("city"), phone: data.get("phone"), telegram: data.get("telegram"), church: data.get("church"),
         attendedBefore: item.attendedBefore,
         clothingSize: data.get("clothingSize"), departments,
         previousDepartments: data.get("previousDepartments") || "", readRoe: data.get("readRoe") || "",

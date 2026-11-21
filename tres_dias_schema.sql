@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS public.tres_dias_registrations (
     birth_date date,
     city text NOT NULL,
     phone text NOT NULL,
+    telegram text,
     church text NOT NULL,
     attended_before boolean,
     clothing_size text NOT NULL,

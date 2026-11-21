@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGAPE CAMP | TRES DIAS 2027</title>
     <link rel="stylesheet" href="/admin/dashboard.css">
-    <link rel="stylesheet" href="/admin/tres-dias.css?v=20261121-2">
-    <script defer src="/admin/tres-dias.js?v=20261121-2"></script>
+    <link rel="stylesheet" href="/admin/tres-dias.css?v=20261121-3">
+    <script defer src="/admin/tres-dias.js?v=20261121-3"></script>
 </head>
 <body>
 <div class="app">
@@ -46,7 +46,7 @@
                 <div class="section-actions"><button id="exportButton">↓ Экспорт Excel</button><button id="refreshButton">↻ Обновить</button></div>
             </div>
             <div class="toolbar">
-                <input type="search" id="searchInput" placeholder="Имя, телефон, церковь или город..." aria-label="Поиск по анкетам">
+                <input type="search" id="searchInput" placeholder="Имя, телефон, Telegram, церковь или город..." aria-label="Поиск по анкетам">
                 <div class="filters" aria-label="Фильтр по типу анкеты">
                     <button class="filter active" data-filter="all">Все</button>
                     <button class="filter" data-filter="participant">Участники</button>
@@ -56,7 +56,7 @@
             <p id="loadingMessage">Загружаем анкеты TRES DIAS...</p>
             <div class="table-wrapper">
                 <table>
-                    <thead><tr><th>ИМЯ</th><th>АНКЕТА</th><th>ГОРОД</th><th>ТЕЛЕФОН</th><th>РАЗМЕР</th><th>ДАТА РЕГИСТРАЦИИ</th><th></th></tr></thead>
+                    <thead><tr><th>ИМЯ</th><th>АНКЕТА</th><th>ГОРОД</th><th>ТЕЛЕФОН</th><th>TELEGRAM</th><th>РАЗМЕР</th><th>ДАТА РЕГИСТРАЦИИ</th><th></th></tr></thead>
                     <tbody id="registrationTable"></tbody>
                 </table>
             </div>
