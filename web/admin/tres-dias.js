@@ -70,7 +70,7 @@ function renderRegistrations() {
 
     filtered.forEach(item => {
         const row = document.createElement("tr");
-        const values = [item.name, item.formType === "servant" ? "Служитель" : "Участник", item.city || "—", item.phone || "—", item.telegram || "—", item.clothingSize || "—", formatDate(item.createdAt)];
+        const values = [item.name, item.formType === "servant" ? "Служитель" : "Участник", item.city || "—", item.phone || "—", item.telegram || "—", item.clothingSize || "—", item.formType === "servant" ? (item.needsTransport == null ? "—" : item.needsTransport ? "Да" : "Нет") : "—", formatDate(item.createdAt)];
         values.forEach((value, index) => {
             const cell = document.createElement("td");
             if (index === 1) {
@@ -123,7 +123,9 @@ function showDetails(item) {
         ["Дата рождения", displayBirthDate(item.birthDate)], ["Город", item.city], ["Телефон", item.phone], ["Telegram", item.telegram],
         ["Церковь", item.church],
         ...(item.attendedBefore == null ? [] : [["Раньше участвовал(а)", item.attendedBefore ? "Да" : "Нет"]]),
-        ["Размер одежды", item.clothingSize], ["Департаменты", (item.departments || []).join(", ") || "—"],
+        ["Размер одежды", item.clothingSize],
+        ...(item.formType === "servant" ? [["Нужен транспорт", item.needsTransport == null ? "Не указано" : item.needsTransport ? "Да" : "Нет"]] : []),
+        ["Департаменты", (item.departments || []).join(", ") || "—"],
         ["Предыдущее служение", item.previousDepartments], ["Читал(а) Рое", item.readRoe],
         ["Аллергии", item.hasAllergies == null ? "Не указано (старая анкета)" : item.hasAllergies ? "Да" : "Нет"],
         ["Подробности аллергии", item.allergyDetails], ["Согласие на обработку сведений об аллергии", item.allergyConsent ? "Да" : "Нет"],
@@ -158,6 +160,7 @@ function showEditor(item) {
             <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Департаменты *</legend><small>Можно выбрать от 1 до 10.</small><div class="edit-check-grid">${departmentHtml}</div><p class="inline-error" id="editDepartmentError" hidden>Выбери от 1 до 10 департаментов.</p></fieldset>
             <label class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><span>Предыдущее служение *</span><textarea name="previousDepartments" rows="3" maxlength="1200"></textarea></label>
             <label class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><span>Читал(а) Рое? *</span><textarea name="readRoe" rows="3" maxlength="1200"></textarea></label>
+            <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Нужен ли транспорт? *</legend><label class="radio"><input type="radio" name="needsTransport" value="true" ${item.needsTransport == null ? "" : "required"}> Да</label><label class="radio"><input type="radio" name="needsTransport" value="false" ${item.needsTransport == null ? "" : "required"}> Нет</label></fieldset>
             <fieldset class="edit-field"><legend>Есть ли аллергии? *</legend><label class="radio"><input type="radio" name="hasAllergies" value="false" required> Нет</label><label class="radio"><input type="radio" name="hasAllergies" value="true"> Да</label><small>Если да, перечисли аллергены.</small><textarea name="allergyDetails" rows="3" maxlength="1500" placeholder="Аллергены и важные подробности"></textarea><label class="consent"><input type="checkbox" name="allergyConsent"> Согласие на обработку сведений об аллергиях получено</label></fieldset>
             <p class="edit-message" aria-live="polite"></p>
             <div class="edit-actions"><button type="submit">Сохранить изменения</button><button type="button" class="modal-close-button" id="cancelEditButton">Отмена</button></div>
@@ -174,6 +177,7 @@ function showEditor(item) {
     form.elements.readRoe.value = item.readRoe || "";
     (item.departments || []).forEach(value => { const checkbox = [...form.querySelectorAll('[name="departments"]')].find(input => input.value === value); if (checkbox) checkbox.checked = true; });
     if (item.hasAllergies != null) form.querySelector(`[name="hasAllergies"][value="${item.hasAllergies}"]`).checked = true;
+    if (item.needsTransport != null) form.querySelector(`[name="needsTransport"][value="${item.needsTransport}"]`).checked = true;
     form.elements.allergyDetails.value = item.allergyDetails || "";
     form.elements.allergyConsent.checked = Boolean(item.allergyConsent);
     syncEditorAllergy(form);
@@ -211,6 +215,7 @@ async function saveEdit(event, item, form) {
         city: data.get("city"), phone: data.get("phone"), telegram: data.get("telegram"), church: data.get("church"),
         attendedBefore: item.attendedBefore,
         clothingSize: data.get("clothingSize"), departments,
+        needsTransport: data.has("needsTransport") ? data.get("needsTransport") === "true" : null,
         previousDepartments: data.get("previousDepartments") || "", readRoe: data.get("readRoe") || "",
         hasAllergies: allergyChoice === "true", allergyDetails: data.get("allergyDetails") || "",
         allergyConsent: data.has("allergyConsent")

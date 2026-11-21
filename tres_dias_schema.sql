@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS public.tres_dias_registrations (
     has_allergies boolean,
     allergy_details text,
     allergy_consent boolean NOT NULL DEFAULT false,
+    needs_transport boolean,
     departments text[] NOT NULL DEFAULT '{}',
     previous_departments text,
     read_roe text,
@@ -26,6 +27,9 @@ CREATE TABLE IF NOT EXISTS public.tres_dias_registrations (
             AND previous_departments IS NOT NULL AND read_roe IS NOT NULL)
     )
 );
+
+ALTER TABLE public.tres_dias_registrations
+    ADD COLUMN IF NOT EXISTS needs_transport boolean;
 
 -- Also safely updates the size constraint if this table was created earlier.
 ALTER TABLE public.tres_dias_registrations

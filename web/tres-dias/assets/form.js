@@ -53,6 +53,7 @@ document.querySelectorAll('[data-form]').forEach(form => {
             telegram: data.get('telegram'),
             church: data.get('church'),
             clothingSize: data.get('clothingSize'),
+            needsTransport: data.has('needsTransport') ? data.get('needsTransport') === 'true' : null,
             hasAllergies: data.get('hasAllergies') === 'true',
             allergyDetails: data.get('allergyDetails') || '',
             allergyConsent: data.has('allergyConsent'),

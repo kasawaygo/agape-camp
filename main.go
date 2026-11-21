@@ -333,6 +333,9 @@ func main() {
 	if err := pool.Ping(ctx); err != nil {
 		log.Fatal("Database connection failed:", err)
 	}
+	if err := ensureTresDiasTransportColumn(ctx, pool); err != nil {
+		log.Fatal("TRES DIAS database migration failed:", err)
+	}
 
 	log.Println("Successfully connected to Supabase!")
 
