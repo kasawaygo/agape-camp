@@ -142,7 +142,7 @@ body {
     font-weight: 900;
 }
 
-.field input,
+.field input:not([type="checkbox"]):not([type="radio"]),
 .field textarea {
     width: 100%;
     min-height: 46px;
@@ -160,7 +160,7 @@ body {
     transition: 0.2s ease;
 }
 
-.field input:focus,
+.field input:not([type="checkbox"]):not([type="radio"]):focus,
 .field textarea:focus {
     border-color: #f07817;
     box-shadow: 0 0 0 3px #f0781722;
@@ -332,6 +332,11 @@ footer {
     transition: background .2s, border-color .2s, transform .2s;
 }
 
+.service-option span {
+    min-width: 0;
+    overflow-wrap: break-word;
+}
+
 .service-option:has(input:checked) {
     background: #ffe2ad;
     border-color: #f07817;
@@ -339,10 +344,15 @@ footer {
 }
 
 .service-option input {
+    flex: 0 0 17px;
     width: 17px;
+    min-width: 17px;
+    max-width: 17px;
     height: 17px;
+    min-height: 17px;
+    margin: 0;
+    padding: 0;
     accent-color: #f07817;
-    flex-shrink: 0;
 }
 
 #otherServiceText {
@@ -531,7 +541,7 @@ img {
 }
 
 /* Better mobile form fields */
-.field input,
+.field input:not([type="checkbox"]):not([type="radio"]),
 .field textarea,
 #otherServiceText,
 #otherAllergyText {
@@ -585,7 +595,7 @@ button {
         min-width: 0;
     }
 
-    .field input,
+    .field input:not([type="checkbox"]):not([type="radio"]),
     .field textarea {
         min-height: 50px;
     }
@@ -636,7 +646,7 @@ button {
         grid-template-columns: 1fr;
     }
 
-    .field input,
+    .field input:not([type="checkbox"]):not([type="radio"]),
     .field textarea {
         min-height: 52px;
     }
@@ -652,7 +662,7 @@ button {
 @media (max-width: 550px) {
     html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
     .paper, .form-section, #registrationForm, .form-grid, .field { width: 100%; min-width: 0; max-width: 100%; }
-    .field input, .field textarea, #otherServiceText, #otherAllergyText { display: block; box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; font-size: 16px; }
+    .field input:not([type="checkbox"]):not([type="radio"]), .field textarea, #otherServiceText, #otherAllergyText { display: block; box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; font-size: 16px; }
     .field input[type="date"] { -webkit-appearance: none; appearance: none; display: block; flex: 0 1 100%; inline-size: 100%; width: 100%; min-width: 0; max-width: 100%; min-height: 52px; text-align: left; line-height: 1.25; padding: 12px; }
     .field input[type="date"]::-webkit-date-and-time-value { min-width: 0; text-align: left; }
     .field input[type="date"]::-webkit-datetime-edit { text-align: left; }
