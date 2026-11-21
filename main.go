@@ -1076,7 +1076,14 @@ func main() {
 	// =========================
 	registerTresDiasRoutes(mux, pool)
 
-	mux.Handle("/", http.FileServer(http.Dir("./web")))
+	webFiles := http.FileServer(http.Dir("./web"))
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if os.Getenv("SITE_MODE") == "tres-dias" && r.URL.Path == "/" {
+			http.Redirect(w, r, "/tres-dias/", http.StatusFound)
+			return
+		}
+		webFiles.ServeHTTP(w, r)
+	})
 
 	log.Println("AGAPE CAMP server running on port", port)
 	server := &http.Server{
