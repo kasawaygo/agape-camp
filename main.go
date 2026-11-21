@@ -1074,6 +1074,7 @@ func main() {
 	// =========================
 	// PUBLIC FRONTEND
 	// =========================
+	registerTresDiasRoutes(mux, pool)
 
 	mux.Handle("/", http.FileServer(http.Dir("./web")))
 
