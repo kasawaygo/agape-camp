@@ -2,7 +2,7 @@ services:
   - type: web
     name: agape-camp
     runtime: go
-    plan: free
+    plan: 0.5c-512mb
     buildCommand: go build -o agape-camp .
     startCommand: ./agape-camp
     healthCheckPath: /healthz
