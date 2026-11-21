@@ -18,7 +18,7 @@ const departmentChoices = [
     ["Kitchen (сценки)", "Kitchen (сценки)"],
     ["Palanka", "Palanka (подарки, письма)"],
     ["Room control", "Room control (порядок в корпусах)"],
-    ["Rollo room", "Rollo room (основной зал, юлтон)"],
+    ["Rollo room", "Rollo room (основной зал)"],
     ["Song Team", "Song Team (прославление)"],
     ["Chapel", "Chapel (молитва)"],
     ["Set up", "Set up (подготовка пространства)"]
@@ -128,7 +128,7 @@ function showDetails(item) {
         ["Департаменты", (item.departments || []).join(", ") || "—"],
         ["Предыдущее служение", item.previousDepartments], ["Читал(а) Рое", item.readRoe],
         ["Аллергии", item.hasAllergies == null ? "Не указано (старая анкета)" : item.hasAllergies ? "Да" : "Нет"],
-        ["Подробности аллергии", item.allergyDetails], ["Согласие на обработку сведений об аллергии", item.allergyConsent ? "Да" : "Нет"],
+        ["Подробности аллергии", item.allergyDetails], ["Согласие на обработку персональных данных", item.personalDataConsent == null ? "Не указано" : item.personalDataConsent ? "Да" : "Нет"],
         ["Дата регистрации", item.createdAt ? new Date(item.createdAt).toLocaleString("ru-RU") : "—"]
     ];
     const section = document.createElement("section");
@@ -161,7 +161,7 @@ function showEditor(item) {
             <label class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><span>Предыдущее служение *</span><textarea name="previousDepartments" rows="3" maxlength="1200"></textarea></label>
             <label class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><span>Читал(а) Рое? *</span><textarea name="readRoe" rows="3" maxlength="1200"></textarea></label>
             <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Нужен ли транспорт? *</legend><label class="radio"><input type="radio" name="needsTransport" value="true" ${item.needsTransport == null ? "" : "required"}> Да</label><label class="radio"><input type="radio" name="needsTransport" value="false" ${item.needsTransport == null ? "" : "required"}> Нет</label></fieldset>
-            <fieldset class="edit-field"><legend>Есть ли аллергии? *</legend><label class="radio"><input type="radio" name="hasAllergies" value="false" required> Нет</label><label class="radio"><input type="radio" name="hasAllergies" value="true"> Да</label><small>Если да, перечисли аллергены.</small><textarea name="allergyDetails" rows="3" maxlength="1500" placeholder="Аллергены и важные подробности"></textarea><label class="consent"><input type="checkbox" name="allergyConsent"> Согласие на обработку сведений об аллергиях получено</label></fieldset>
+            <fieldset class="edit-field"><legend>Есть ли аллергии? *</legend><label class="radio"><input type="radio" name="hasAllergies" value="false" required> Нет</label><label class="radio"><input type="radio" name="hasAllergies" value="true"> Да</label><small>Если да, перечисли аллергены.</small><textarea name="allergyDetails" rows="3" maxlength="1500" placeholder="Аллергены и важные подробности"></textarea></fieldset>
             <p class="edit-message" aria-live="polite"></p>
             <div class="edit-actions"><button type="submit">Сохранить изменения</button><button type="button" class="modal-close-button" id="cancelEditButton">Отмена</button></div>
         </form>`;
@@ -179,7 +179,6 @@ function showEditor(item) {
     if (item.hasAllergies != null) form.querySelector(`[name="hasAllergies"][value="${item.hasAllergies}"]`).checked = true;
     if (item.needsTransport != null) form.querySelector(`[name="needsTransport"][value="${item.needsTransport}"]`).checked = true;
     form.elements.allergyDetails.value = item.allergyDetails || "";
-    form.elements.allergyConsent.checked = Boolean(item.allergyConsent);
     syncEditorAllergy(form);
     form.elements.birthDate.addEventListener("input", event => {
         const digits = event.target.value.replace(/\D/g, "").slice(0, 8);
@@ -218,7 +217,6 @@ async function saveEdit(event, item, form) {
         needsTransport: data.has("needsTransport") ? data.get("needsTransport") === "true" : null,
         previousDepartments: data.get("previousDepartments") || "", readRoe: data.get("readRoe") || "",
         hasAllergies: allergyChoice === "true", allergyDetails: data.get("allergyDetails") || "",
-        allergyConsent: data.has("allergyConsent")
     };
     const dateInput = form.elements.birthDate;
     if (dateInput.value && !/^\d{4}\.\d{2}\.\d{2}$/.test(payload.birthDate)) { dateInput.setCustomValidity("Введи дату как ГГГГ.ММ.ДД."); dateInput.reportValidity(); dateInput.setCustomValidity(""); return; }

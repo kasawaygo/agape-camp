@@ -56,7 +56,7 @@ document.querySelectorAll('[data-form]').forEach(form => {
             needsTransport: data.has('needsTransport') ? data.get('needsTransport') === 'true' : null,
             hasAllergies: data.get('hasAllergies') === 'true',
             allergyDetails: data.get('allergyDetails') || '',
-            allergyConsent: data.has('allergyConsent'),
+            personalDataConsent: data.has('personalDataConsent'),
             departments: selected.map(input => input.value),
             previousDepartments: data.get('previousDepartments') || '',
             readRoe: data.get('readRoe') || ''
