@@ -648,14 +648,8 @@ button {
 }
 
 /* TRES DIAS link and mobile-safe controls */
-.tres-dias-link { max-width: 760px; margin: 0 auto; text-align: center; background: #f9eee5; padding: 18px 24px 8px; }
-.tres-dias-link a { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 22px; border-radius: 16px; background: linear-gradient(110deg, #fff2d8, #ffe2b5); border: 2px solid #e8ae58; color: #292522; font-weight: 900; text-align: left; text-decoration: none; box-shadow: 0 5px 14px #955b1a1c; }
-.tres-dias-link a span { flex: 0 0 auto; color: #e96b17; }
-.tres-dias-link a:hover { border-color: #f07817; transform: translateY(-1px); }
 
 @media (max-width: 550px) {
-    .tres-dias-link { padding: 14px 18px 4px; }
-    .tres-dias-link a { padding: 15px 16px; font-size: 14px; }
     html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
     .paper, .form-section, #registrationForm, .form-grid, .field { width: 100%; min-width: 0; max-width: 100%; }
     .field input, .field textarea, #otherServiceText, #otherAllergyText { display: block; box-sizing: border-box; width: 100%; min-width: 0; max-width: 100%; font-size: 16px; }

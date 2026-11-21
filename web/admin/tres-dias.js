@@ -104,7 +104,7 @@ function showDetails(item) {
         ["Церковь", item.church], ["Участвовал(а) ранее", item.attendedBefore == null ? "—" : item.attendedBefore ? "Да" : "Нет"],
         ["Размер одежды", item.clothingSize], ["Департаменты", (item.departments || []).join(", ") || "—"],
         ["Предыдущее служение", item.previousDepartments], ["Читал(а) Рое", item.readRoe],
-        ["Пожелания по размещению", item.accommodationNotes], ["Дата регистрации", item.createdAt ? new Date(item.createdAt).toLocaleString("ru-RU") : "—"]
+        ["Аллергии", item.hasAllergies == null ? "Не указано (старая анкета)" : item.hasAllergies ? "Да" : "Нет"], ["Подробности аллергии", item.allergyDetails], ["Согласие на обработку сведений об аллергии", item.allergyConsent ? "Да" : "Нет"], ["Дата регистрации", item.createdAt ? new Date(item.createdAt).toLocaleString("ru-RU") : "—"]
     ];
     const section = document.createElement("section");
     section.className = "modal-section";

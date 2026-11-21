@@ -10,7 +10,9 @@ CREATE TABLE IF NOT EXISTS public.tres_dias_registrations (
     church text NOT NULL,
     attended_before boolean,
     clothing_size text NOT NULL,
-    accommodation_notes text,
+    has_allergies boolean,
+    allergy_details text,
+    allergy_consent boolean NOT NULL DEFAULT false,
     departments text[] NOT NULL DEFAULT '{}',
     previous_departments text,
     read_roe text,
@@ -37,3 +39,10 @@ CREATE INDEX IF NOT EXISTS tres_dias_registrations_created_at_idx
     ON public.tres_dias_registrations (created_at DESC);
 CREATE INDEX IF NOT EXISTS tres_dias_registrations_form_type_idx
     ON public.tres_dias_registrations (form_type);
+
+-- Safe additive migration for an existing TRES DIAS table. Existing answers
+-- remain NULL for has_allergies so they are not misrepresented as "No".
+ALTER TABLE public.tres_dias_registrations
+    ADD COLUMN IF NOT EXISTS has_allergies boolean,
+    ADD COLUMN IF NOT EXISTS allergy_details text,
+    ADD COLUMN IF NOT EXISTS allergy_consent boolean NOT NULL DEFAULT false;
