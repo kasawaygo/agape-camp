@@ -12,6 +12,16 @@ document.querySelectorAll('[data-form]').forEach(form => {
     const message = form.querySelector('.form-message');
     const checks = [...form.querySelectorAll('input[name="departments"]')];
     const dateInput = form.querySelector('[name="birthDate"]');
+    const tgInput = form.querySelector('[name="telegram"]');
+    const tgNone = form.querySelector('[name="noTelegram"]');
+    const syncTelegram = () => {
+        const absent = !!tgNone?.checked;
+        tgInput.disabled = absent;
+        tgInput.required = !absent;
+        if (absent) tgInput.value = "";
+    };
+    tgNone?.addEventListener("change", syncTelegram);
+    syncTelegram();
     attachBirthDateFormat(dateInput);
     const allergyRadios = [...form.querySelectorAll('input[name="hasAllergies"]')];
     const allergyDetails = form.querySelector('[name="allergyDetails"]');
@@ -87,7 +97,7 @@ document.querySelectorAll('[data-form]').forEach(form => {
             birthDate,
             city: data.get('city'),
             phone: data.get('phone'),
-            telegram: data.get('telegram'),
+            telegram: tgNone?.checked ? 'Нет Telegram' : data.get('telegram'),
             church: data.get('church'),
             clothingSize: data.get('clothingSize'),
             needsTransport: data.has('needsTransport') ? data.get('needsTransport') === 'true' : null,
@@ -111,6 +121,7 @@ document.querySelectorAll('[data-form]').forEach(form => {
             const result = await response.json();
             if (!response.ok) throw new Error(result.message || 'Не получилось отправить анкету.');
             form.reset();
+            syncTelegram();
             syncAllergy();
             syncMananita();
             message.textContent = result.message;

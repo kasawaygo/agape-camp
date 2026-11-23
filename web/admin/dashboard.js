@@ -369,7 +369,23 @@ function renderRegistrationDetails() {
 
     addInput(form, "Имя", "name", item.name);
     addInput(form, "Телефон", "phone", item.phone);
-    addInput(form, "Telegram", "telegram", item.telegram);
+    addInput(form, "Telegram", "telegram",
+        item.telegram === "Нет Telegram" ? "" : item.telegram);
+    const tgLabel = document.createElement("label");
+    tgLabel.className = "edit-checkbox";
+    const tgNone = document.createElement("input");
+    tgNone.type = "checkbox";
+    tgNone.name = "noTelegram";
+    tgNone.checked = item.telegram === "Нет Telegram";
+    tgLabel.append(tgNone, document.createTextNode(" У меня нет Telegram"));
+    form.appendChild(tgLabel);
+    const tgInput = form.querySelector('input[name="telegram"]');
+    const syncEditorTelegram = () => {
+        tgInput.disabled = tgNone.checked;
+        if (tgNone.checked) tgInput.value = "";
+    };
+    tgNone.addEventListener("change", syncEditorTelegram);
+    syncEditorTelegram();
     addInput(form, "Дата рождения (ГГГГ.ММ.ДД)", "birthDate", item.birthDate);
     addInput(form, "Церковь", "church", item.church);
 
@@ -432,7 +448,7 @@ async function saveRegistration() {
         role: item.role,
         name: formData.get("name").trim(),
         phone: formData.get("phone").trim(),
-        telegram: formData.get("telegram").trim(),
+        telegram: formData.has("noTelegram") ? "Нет Telegram" : (formData.get("telegram") || "").trim(),
         birthDate: (formData.get("birthDate") || "").replace(/^(\d{4})\.(\d{2})\.(\d{2})$/, "$1-$2-$3"),
         church: formData.get("church").trim(),
         dream: formData.get("dream") || "",

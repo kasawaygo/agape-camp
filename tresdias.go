@@ -77,7 +77,7 @@ func validateTresDiasRegistration(r *TresDiasRegistration, requireTransport bool
 	if !validPhone(r.Phone) {
 		return "Проверь номер телефона."
 	}
-	if r.Telegram != "" && !telegramRegex.MatchString(r.Telegram) {
+	if r.Telegram != "" && !validTelegramChoice(r.Telegram) {
 		return "Укажи Telegram username начиная с @."
 	}
 	if r.BirthDate != "" {

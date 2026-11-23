@@ -48,6 +48,10 @@ var (
 	digitsRegex   = regexp.MustCompile(`[0-9]`)
 )
 
+func validTelegramChoice(value string) bool {
+	return value == "Нет Telegram" || telegramRegex.MatchString(value)
+}
+
 func validPhone(phone string) bool {
 	phone = strings.TrimSpace(phone)
 
@@ -112,7 +116,7 @@ func validateRegistration(data *Registration) string {
 	}
 
 	// Telegram
-	if !telegramRegex.MatchString(data.Telegram) {
+	if !validTelegramChoice(data.Telegram) {
 		return "Invalid Telegram username"
 	}
 

@@ -32,6 +32,18 @@ const otherAllergy = document.querySelector("#otherAllergy");
 const otherAllergyText = document.querySelector("#otherAllergyText");
 
 const telegramInput = document.querySelector("#telegram");
+const noTelegramCheckbox = document.querySelector("#noTelegram");
+function syncTelegramAvailability() {
+    const absent = noTelegramCheckbox.checked;
+    telegramInput.disabled = absent;
+    telegramInput.required = !absent;
+    if (absent) {
+        telegramInput.value = "";
+        telegramInput.setCustomValidity("");
+    }
+}
+noTelegramCheckbox.addEventListener("change", syncTelegramAvailability);
+syncTelegramAvailability();
 
 // ===== ROLE SWITCHING =====
 
@@ -132,9 +144,9 @@ form.addEventListener("submit", async event => {
 
     if (!selectedRole) return;
 
-    const telegram = telegramInput.value.trim();
+    const telegram = noTelegramCheckbox.checked ? "Нет Telegram" : telegramInput.value.trim();
 
-    if (!validateTelegram(telegram)) {
+    if (!noTelegramCheckbox.checked && !validateTelegram(telegram)) {
         telegramInput.setCustomValidity(
             "Введи корректный Telegram username, начиная с @"
         );
@@ -249,6 +261,7 @@ form.addEventListener("submit", async event => {
 
         message.textContent = "Анкета успешно отправлена! Спасибо за регистрацию ❤️";
         form.reset();
+        syncTelegramAvailability();
         updateRole();
 
     } catch (error) {
