@@ -21,7 +21,9 @@ const departmentChoices = [
     ["Rollo room", "Rollo room (основной зал)"],
     ["Song Team", "Song Team (прославление)"],
     ["Chapel", "Chapel (молитва)"],
-    ["Set up", "Set up (подготовка пространства)"]
+    ["Set up", "Set up (подготовка пространства)"],
+    ["Refreshment", "Refreshment (десерты)"],
+    ["Photo/Video", "Photo/Video (фото/видеосъёмка)"]
 ];
 
 let registrations = [];
