@@ -22,19 +22,20 @@ import (
 )
 
 type Registration struct {
-	Role           string   `json:"role"`
-	Name           string   `json:"name"`
-	Phone          string   `json:"phone"`
-	Telegram       string   `json:"telegram"`
-	BirthDate      string   `json:"birthDate"`
-	Church         string   `json:"church"`
-	Dream          string   `json:"dream"`
-	ParentPhone    string   `json:"parentPhone"`
-	Allergies      []string `json:"allergies"`
-	OtherAllergy   string   `json:"otherAllergy"`
-	AllergyConsent bool     `json:"allergyConsent"`
-	ServiceAreas   []string `json:"serviceAreas"`
-	OtherService   string   `json:"otherService"`
+	Base           map[string]any `json:"base,omitempty"`
+	Role           string         `json:"role"`
+	Name           string         `json:"name"`
+	Phone          string         `json:"phone"`
+	Telegram       string         `json:"telegram"`
+	BirthDate      string         `json:"birthDate"`
+	Church         string         `json:"church"`
+	Dream          string         `json:"dream"`
+	ParentPhone    string         `json:"parentPhone"`
+	Allergies      []string       `json:"allergies"`
+	OtherAllergy   string         `json:"otherAllergy"`
+	AllergyConsent bool           `json:"allergyConsent"`
+	ServiceAreas   []string       `json:"serviceAreas"`
+	OtherService   string         `json:"otherService"`
 }
 
 type LoginRequest struct {
@@ -154,6 +155,11 @@ func originProtection(next http.Handler) http.Handler {
 		// GET, HEAD и OPTIONS не изменяют данные
 		switch r.Method {
 		case http.MethodGet, http.MethodHead, http.MethodOptions:
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		if r.URL.Path == "/api/sheets-sync" && syncAuthorized(r) {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -340,6 +346,7 @@ func main() {
 	log.Println("Successfully connected to Supabase!")
 
 	mux := http.NewServeMux()
+	registerSheetsSync(mux, pool)
 
 	// Render uses this endpoint to confirm the service and database are ready.
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
@@ -804,52 +811,7 @@ func main() {
 			return
 		}
 
-		// Обновляем запись в Supabase
-		_, err = pool.Exec(r.Context(), `
-        UPDATE public.registrations
-        SET
-            role = $1,
-            name = $2,
-            phone = $3,
-            telegram = $4,
-            birth_date = $5,
-            church = $6,
-            dream = $7,
-            parent_phone = $8,
-            allergies = $9::jsonb,
-            other_allergy = $10,
-            allergy_consent = $11,
-            service_areas = $12,
-            other_service = $13
-        WHERE id = $14
-    `,
-			reg.Role,
-			reg.Name,
-			reg.Phone,
-			reg.Telegram,
-			reg.BirthDate,
-			reg.Church,
-			nullableString(reg.Dream),
-			nullableString(reg.ParentPhone),
-			mustJSON(reg.Allergies),
-			nullableString(reg.OtherAllergy),
-			reg.AllergyConsent,
-			reg.ServiceAreas,
-			nullableString(reg.OtherService),
-			id,
-		)
-
-		if err != nil {
-			log.Println("Failed to update registration:", err)
-			writeJSON(w, http.StatusInternalServerError, map[string]string{
-				"message": "Could not update registration",
-			})
-			return
-		}
-
-		writeJSON(w, http.StatusOK, map[string]string{
-			"message": "Registration updated successfully",
-		})
+		adminSyncEdit(w, r, pool, "camp", id, reg.Base, reg)
 	})
 
 	// =========================

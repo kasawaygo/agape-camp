@@ -428,6 +428,7 @@ async function saveRegistration() {
     const item = selectedRegistration;
 
     const data = {
+        base: item,
         role: item.role,
         name: formData.get("name").trim(),
         phone: formData.get("phone").trim(),

@@ -15,25 +15,26 @@ import (
 )
 
 type TresDiasRegistration struct {
-	ID                     string    `json:"id"`
-	FormType               string    `json:"formType"`
-	Name                   string    `json:"name"`
-	BirthDate              string    `json:"birthDate"`
-	City                   string    `json:"city"`
-	Phone                  string    `json:"phone"`
-	Telegram               string    `json:"telegram"`
-	Church                 string    `json:"church"`
-	AttendedBefore         *bool     `json:"attendedBefore"`
-	ClothingSize           string    `json:"clothingSize"`
-	HasAllergies           *bool     `json:"hasAllergies"`
-	AllergyDetails         string    `json:"allergyDetails"`
-	PersonalDataConsent    *bool     `json:"personalDataConsent"`
-	NeedsTransport         *bool     `json:"needsTransport"`
-	CloseOnesParticipating *bool     `json:"closeOnesParticipating"`
-	Departments            []string  `json:"departments"`
-	PreviousDepartments    string    `json:"previousDepartments"`
-	ReadRoe                string    `json:"readRoe"`
-	CreatedAt              time.Time `json:"createdAt"`
+	Base                   map[string]any `json:"base,omitempty"`
+	ID                     string         `json:"id"`
+	FormType               string         `json:"formType"`
+	Name                   string         `json:"name"`
+	BirthDate              string         `json:"birthDate"`
+	City                   string         `json:"city"`
+	Phone                  string         `json:"phone"`
+	Telegram               string         `json:"telegram"`
+	Church                 string         `json:"church"`
+	AttendedBefore         *bool          `json:"attendedBefore"`
+	ClothingSize           string         `json:"clothingSize"`
+	HasAllergies           *bool          `json:"hasAllergies"`
+	AllergyDetails         string         `json:"allergyDetails"`
+	PersonalDataConsent    *bool          `json:"personalDataConsent"`
+	NeedsTransport         *bool          `json:"needsTransport"`
+	CloseOnesParticipating *bool          `json:"closeOnesParticipating"`
+	Departments            []string       `json:"departments"`
+	PreviousDepartments    string         `json:"previousDepartments"`
+	ReadRoe                string         `json:"readRoe"`
+	CreatedAt              time.Time      `json:"createdAt"`
 }
 
 var tresDiasSizes = map[string]bool{"S": true, "M": true, "L": true, "XL": true, "2XL": true, "3XL": true, "4XL": true, "5XL": true}
@@ -241,17 +242,7 @@ func registerTresDiasRoutes(mux *http.ServeMux, pool *pgxpool.Pool) {
 				return
 			}
 			reg.PersonalDataConsent = personalDataConsent
-			tag, err := pool.Exec(r.Context(), `UPDATE public.tres_dias_registrations SET name=$2,birth_date=NULLIF($3,'')::date,city=$4,phone=$5,telegram=NULLIF($6,''),church=$7,attended_before=COALESCE($8,attended_before),clothing_size=$9,departments=$10,previous_departments=NULLIF($11,''),read_roe=NULLIF($12,''),has_allergies=$13,allergy_details=NULLIF($14,''),personal_data_consent=COALESCE($15,personal_data_consent),needs_transport=$16,close_ones_participating=COALESCE($17,close_ones_participating) WHERE id=$1 AND form_type=$18`, id, reg.Name, reg.BirthDate, reg.City, reg.Phone, reg.Telegram, reg.Church, reg.AttendedBefore, reg.ClothingSize, reg.Departments, reg.PreviousDepartments, reg.ReadRoe, reg.HasAllergies, reg.AllergyDetails, reg.PersonalDataConsent, reg.NeedsTransport, reg.CloseOnesParticipating, reg.FormType)
-			if err != nil {
-				log.Printf("TRES DIAS registration update failed: %v", err)
-				writeJSON(w, http.StatusInternalServerError, map[string]string{"message": "Не удалось сохранить изменения анкеты."})
-				return
-			}
-			if tag.RowsAffected() == 0 {
-				writeJSON(w, http.StatusNotFound, map[string]string{"message": "Анкета не найдена."})
-				return
-			}
-			writeJSON(w, http.StatusOK, map[string]string{"message": "Изменения сохранены."})
+			adminSyncEdit(w, r, pool, "tres", id, reg.Base, reg)
 		default:
 			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"message": "Method not allowed"})
 		}

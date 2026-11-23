@@ -1,1 +1,17 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Google credentials
+*credentials*.json
+*service-account*.json
+*service_account*.json
+google-sync/credentials/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
 .env

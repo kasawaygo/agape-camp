@@ -211,6 +211,7 @@ async function saveEdit(event, item, form) {
     const data = new FormData(form);
     const allergyChoice = data.get("hasAllergies");
     const payload = {
+        base: item,
         formType: item.formType,
         name: data.get("name"),
         birthDate: (data.get("birthDate") || "").trim(),
