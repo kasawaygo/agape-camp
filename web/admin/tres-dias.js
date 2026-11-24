@@ -23,7 +23,8 @@ const departmentChoices = [
     ["Chapel", "Chapel (молитва)"],
     ["Set up", "Set up (подготовка пространства)"],
     ["Refreshment", "Refreshment (десерты)"],
-    ["Photo/Video", "Photo/Video (фото/видеосъёмка)"]
+    ["Photo/Video", "Photo/Video (фото/видеосъёмка)"],
+    ["Media", "Media (слайдист/музыка)"]
 ];
 
 let registrations = [];
@@ -218,7 +219,7 @@ async function saveEdit(event, item, form) {
     event.preventDefault();
     const message = form.querySelector(".edit-message");
     const departments = [...form.querySelectorAll('[name="departments"]:checked')].map(input => input.value);
-    if (item.formType === "servant" && (departments.length < 1 || departments.length > departmentChoices.length)) {
+    if (item.formType === "servant" && (departments.length < 1 || departments.length > 10)) {
         form.querySelector("#editDepartmentError").hidden = false;
         return;
     }

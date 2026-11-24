@@ -82,7 +82,7 @@ document.querySelectorAll('[data-form]').forEach(form => {
         message.textContent = '';
         const selected = checks.filter(input => input.checked);
         const warning = form.querySelector('.inline-error');
-        if (checks.length && (selected.length < 1 || selected.length > checks.length)) {
+        if (checks.length && (selected.length < 1 || selected.length > 10)) {
             warning.hidden = false;
             checks[0].focus();
             return;
