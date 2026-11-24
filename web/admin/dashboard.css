@@ -947,3 +947,5 @@ td {
         flex-basis: 72px;
     }
 }
+
+.sheet-link{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border:1px solid #ded2c4;border-radius:8px;background:#fffdfa;color:#292522;text-decoration:none;font-weight:700;white-space:nowrap}.sheet-link:hover{background:#f3e9dc}

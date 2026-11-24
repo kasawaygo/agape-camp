@@ -49,7 +49,12 @@ var (
 )
 
 func validTelegramChoice(value string) bool {
-	return value == "Нет Telegram" || telegramRegex.MatchString(value)
+	if value == "Нет Telegram" || telegramRegex.MatchString(value) {
+		return true
+	}
+	const prefix = "Нет Telegram; Связь: "
+	contact := strings.TrimPrefix(value, prefix)
+	return strings.HasPrefix(value, prefix) && strings.TrimSpace(contact) != "" && utf8.RuneCountInString(contact) <= 160 && !strings.ContainsAny(contact, "\r\n")
 }
 
 func validPhone(phone string) bool {

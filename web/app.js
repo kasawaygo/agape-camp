@@ -33,10 +33,15 @@ const otherAllergyText = document.querySelector("#otherAllergyText");
 
 const telegramInput = document.querySelector("#telegram");
 const noTelegramCheckbox = document.querySelector("#noTelegram");
+const alternateContact = document.querySelector("#alternateContact");
+const alternateContactLabel = document.querySelector("#alternateContactLabel");
 function syncTelegramAvailability() {
     const absent = noTelegramCheckbox.checked;
     telegramInput.disabled = absent;
     telegramInput.required = !absent;
+    alternateContactLabel.hidden = !absent;
+    alternateContact.disabled = !absent;
+    alternateContact.required = absent;
     if (absent) {
         telegramInput.value = "";
         telegramInput.setCustomValidity("");
@@ -144,7 +149,7 @@ form.addEventListener("submit", async event => {
 
     if (!selectedRole) return;
 
-    const telegram = noTelegramCheckbox.checked ? "Нет Telegram" : telegramInput.value.trim();
+    const telegram = noTelegramCheckbox.checked ? `Нет Telegram; Связь: ${alternateContact.value.trim()}` : telegramInput.value.trim();
 
     if (!noTelegramCheckbox.checked && !validateTelegram(telegram)) {
         telegramInput.setCustomValidity(

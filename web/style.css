@@ -667,3 +667,5 @@ button {
     .field input[type="date"]::-webkit-date-and-time-value { min-width: 0; text-align: left; }
     .field input[type="date"]::-webkit-datetime-edit { text-align: left; }
 }
+
+.field .alternate-contact[hidden]{display:none!important}.field .alternate-contact{display:block;margin-top:10px}.field .alternate-contact input{display:block;margin-top:6px}

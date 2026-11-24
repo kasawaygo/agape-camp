@@ -73,7 +73,7 @@
                             pattern="@[A-Za-z][A-Za-z0-9_]{4,31}"
                             title="Укажи Telegram username начиная с @"
                         >
-<label class="telegram-none"><input type="checkbox" id="noTelegram"> У меня нет Telegram</label>
+<label class="telegram-none"><input type="checkbox" id="noTelegram"> У меня нет Telegram</label><label class="alternate-contact" id="alternateContactLabel" hidden>Другой способ связи *<input id="alternateContact" type="text" maxlength="160" placeholder="Например: WhatsApp или KakaoTalk" disabled></label>
                     </div>
 
                     <div class="field">
@@ -265,6 +265,6 @@
 
     </main>
 
-    <script src="app.js?v=20261124-no-telegram"></script>
+    <script src="app.js?v=20261124-alternate-contact"></script>
 </body>
 </html>

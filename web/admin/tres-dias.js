@@ -157,7 +157,7 @@ function showEditor(item) {
             <label class="edit-field"><span>Дата рождения ${item.formType === "participant" ? "*" : ""}</span><small>Формат: ГГГГ.ММ.ДД</small><input name="birthDate" type="text" inputmode="numeric" maxlength="10" placeholder="ГГГГ.ММ.ДД" ${item.formType === "participant" ? "required" : ""}></label>
             <label class="edit-field"><span>Город *</span><input name="city" maxlength="100" required></label>
             <label class="edit-field"><span>Телефон *</span><input name="phone" type="tel" required></label>
-            <label class="edit-field"><span>Telegram</span><input name="telegram" type="text" placeholder="@username" autocomplete="off" autocapitalize="none" spellcheck="false" minlength="6" maxlength="33" pattern="@[A-Za-z][A-Za-z0-9_]{4,31}" title="Укажи Telegram username начиная с @"></label><label class="edit-field"><input type="checkbox" name="noTelegram"> У меня нет Telegram</label>
+            <label class="edit-field"><span>Telegram</span><input name="telegram" type="text" placeholder="@username" autocomplete="off" autocapitalize="none" spellcheck="false" minlength="6" maxlength="33" pattern="@[A-Za-z][A-Za-z0-9_]{4,31}" title="Укажи Telegram username начиная с @"></label><label class="edit-field"><input type="checkbox" name="noTelegram"> У меня нет Telegram</label><label class="edit-field alternate-contact" hidden><span>Другой способ связи *</span><input name="alternateContact" maxlength="160" placeholder="WhatsApp или KakaoTalk" disabled></label>
             <label class="edit-field"><span>Церковь *</span><input name="church" maxlength="160" required></label>
             <label class="edit-field"><span>Размер одежды *</span><select name="clothingSize" required><option value="">Выбрать</option>${["S","M","L","XL","2XL","3XL","4XL","5XL"].map(size => `<option value="${size}">${size}</option>`).join("")}</select></label>
             <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Департаменты *</legend><small>Можно выбрать от 1 до 10.</small><div class="edit-check-grid">${departmentHtml}</div><p class="inline-error" id="editDepartmentError" hidden>Выбери от 1 до 10 департаментов.</p></fieldset>
@@ -174,11 +174,15 @@ function showEditor(item) {
     form.elements.birthDate.value = inputBirthDate(item.birthDate);
     form.elements.city.value = item.city || "";
     form.elements.phone.value = item.phone || "";
-    form.elements.telegram.value = item.telegram === "Нет Telegram" ? "" : (item.telegram || "");
+    form.elements.telegram.value = item.telegram?.startsWith("Нет Telegram") ? "" : (item.telegram || "");
     const tgNone = form.querySelector('[name="noTelegram"]');
-    tgNone.checked = item.telegram === "Нет Telegram";
+    tgNone.checked = item.telegram?.startsWith("Нет Telegram") || false;
+    form.elements.alternateContact.value = item.telegram?.startsWith("Нет Telegram; Связь: ") ? item.telegram.slice("Нет Telegram; Связь: ".length) : "";
     const syncEditorTelegram = () => {
         form.elements.telegram.disabled = tgNone.checked;
+        form.elements.alternateContact.closest("label").hidden = !tgNone.checked;
+        form.elements.alternateContact.disabled = !tgNone.checked;
+        form.elements.alternateContact.required = tgNone.checked;
         if (tgNone.checked) form.elements.telegram.value = "";
     };
     tgNone.addEventListener("change", syncEditorTelegram);
@@ -225,7 +229,7 @@ async function saveEdit(event, item, form) {
         formType: item.formType,
         name: data.get("name"),
         birthDate: (data.get("birthDate") || "").trim(),
-        city: data.get("city"), phone: data.get("phone"), telegram: data.has("noTelegram") ? "Нет Telegram" : data.get("telegram"), church: data.get("church"),
+        city: data.get("city"), phone: data.get("phone"), telegram: data.has("noTelegram") ? `Нет Telegram; Связь: ${(data.get("alternateContact") || "").trim()}` : data.get("telegram"), church: data.get("church"),
         attendedBefore: item.attendedBefore,
         clothingSize: data.get("clothingSize"), departments,
         needsTransport: data.has("needsTransport") ? data.get("needsTransport") === "true" : null,
