@@ -18,7 +18,7 @@ function api_(kind, edit) {
   let body; try { body = JSON.parse(response.getContentText()); } catch (_) { throw new Error('Сервер временно недоступен'); }
   return {status: response.getResponseCode(), body};
 }
-function targets_() { const p=config_(); return [{kind:'camp',id:p.CAMP_SHEET_ID},{kind:'tres',id:p.TRES_SHEET_ID}]; }
+function targets_() { const p=config_(); return [{kind:'camp',id:p.CAMP_SHEET_ID},{kind:'tres',id:p.TRES_SHEET_ID}].flatMap(t=>[{...t,sheet:'Анкеты',state:'_sync'},{...t,sheet:'Участники',state:'_sync_participant',role:'participant'},{...t,sheet:'Служители',state:'_sync_servant',role:'servant'}]); }
 function text_(v) { const s=String(v == null ? '' : v); return /^[=+@-]/.test(s) ? "'"+s : s; }
 function display_(f,v) {
   if (v == null) return '';
@@ -37,8 +37,8 @@ function parse_(f,v) {
 }
 function eq_(a,b) {return JSON.stringify(a)===JSON.stringify(b);}
 function status_(sheet,row,col,message) {sheet.getRange(row,col).setValue(text_(message));}
-function state_(ss) {
-  const sheet=ss.getSheetByName('_sync');
+function state_(ss,t) {
+  const sheet=ss.getSheetByName(t.state);
   if(!sheet)throw new Error('Не найден служебный лист: запусти install');
   const map={};if(sheet.getLastRow()>1) sheet.getRange(2,1,sheet.getLastRow()-1,2).getValues().forEach((r,i)=>{if(r[0])map[r[0]]={index:i+2,data:JSON.parse(r[1])};});
   return {sheet,map};
@@ -54,13 +54,13 @@ function install() {
   targets_().forEach(t=>{
     const response=api_(t.kind);if(response.status!==200)throw new Error('Нет доступа к серверу: '+response.status);
     const ss=SpreadsheetApp.openById(t.id), fields=response.body.fields;
-    const sheet=ss.getSheetByName('Анкеты');if(!sheet)throw new Error('Нет листа Анкеты');
+    const sheet=ss.getSheetByName(t.sheet)||ss.insertSheet(t.sheet); sheet.setColumnWidth(2,300);
     sheet.getRange(1,1,1,fields.length+1).setValues([[...fields.map(f=>f.label),'Синхронизация']]);
     sheet.setFrozenRows(1);sheet.setFrozenColumns(2);
     if(!sheet.getFilter())sheet.getRange(1,1,sheet.getMaxRows(),fields.length+1).createFilter();
     sheet.getRange(1,1,1,fields.length+1).setBackground('#eeeeee').setFontWeight('bold').setWrap(true);
     sheet.setRowHeight(1,52);
-    let state=ss.getSheetByName('_sync');if(!state){state=ss.insertSheet('_sync');state.appendRow(['ID','Последнее согласованное состояние']);state.hideSheet();}
+    let state=ss.getSheetByName(t.state);if(!state){state=ss.insertSheet(t.state);state.appendRow(['ID','Последнее согласованное состояние']);state.hideSheet();}
     if(!ss.getSheetByName('История')){ss.insertSheet('История').appendRow(['Время','ID','Событие','Подробности']);}
     [sheet,state,ss.getSheetByName('История')].forEach(s=>{
       let protection=s.getProtections(SpreadsheetApp.ProtectionType.SHEET).find(p=>p.getDescription()==='AGAPE sync');
@@ -72,7 +72,7 @@ function install() {
   // Replace only this project's own bridge triggers, never unrelated ones.
   ScriptApp.getProjectTriggers().filter(t=>['syncAll','captureEdit'].includes(t.getHandlerFunction())).forEach(t=>ScriptApp.deleteTrigger(t));
   ScriptApp.newTrigger('syncAll').timeBased().everyMinutes(1).create();
-  targets_().forEach(t=>ScriptApp.newTrigger('captureEdit').forSpreadsheet(t.id).onEdit().create());
+  [...new Set(targets_().map(t=>t.id))].forEach(id=>ScriptApp.newTrigger('captureEdit').forSpreadsheet(id).onEdit().create());
   syncAll();
 }
 function syncAll(){
@@ -80,8 +80,8 @@ function syncAll(){
  try {targets_().forEach(t=>{try{reconcile_(t);}catch(e){const ss=SpreadsheetApp.openById(t.id);ss.getSheetByName('Инструкция').getRange('B2').setValue('Ошибка синхронизации: '+e.message);}});}finally{lock.releaseLock();}
 }
 function captureEdit(e){
- if(!e || e.range.getSheet().getName()!=='Анкеты' || e.range.getRow()===1)return;
- const t=targets_().find(x=>x.id===e.source.getId());if(!t)return;
+ if(!e || e.range.getRow()===1)return;
+ const t=targets_().find(x=>x.id===e.source.getId()&&x.sheet===e.range.getSheet().getName());if(!t)return;
  // Preserve the event payload even if reconciliation is busy. Google's edit
  // event supplies old/new values only for a single-cell edit.
  const single=e.range.getNumRows()===1&&e.range.getNumColumns()===1;
@@ -90,7 +90,7 @@ function captureEdit(e){
  // The scheduled reconciliation also discovers edits if an onEdit trigger fails.
  const lock=LockService.getScriptLock();if(!lock.tryLock(25000))return;
  try{
-  const sheet=e.range.getSheet(), st=state_(e.source);
+  const sheet=e.range.getSheet(), st=state_(e.source,t);
   if(single && st.map[eventId]) {
    const snapshot=api_(t.kind);if(snapshot.status!==200)return;
    const f=snapshot.body.fields[e.range.getColumn()-1];
@@ -115,12 +115,12 @@ function captureEdit(e){
 }
 function reconcile_(t){
  const response=api_(t.kind);if(response.status!==200)throw new Error('Сервер ответил '+response.status);
- const ss=SpreadsheetApp.openById(t.id),sheet=ss.getSheetByName('Анкеты'),fields=response.body.fields,st=state_(ss),statusCol=fields.length+1;
+ const ss=SpreadsheetApp.openById(t.id),sheet=ss.getSheetByName(t.sheet),fields=response.body.fields,st=state_(ss,t),statusCol=fields.length+1;
  const headers=sheet.getRange(1,1,1,statusCol).getDisplayValues()[0];if(!eq_(headers,[...fields.map(f=>f.label),'Синхронизация']))throw new Error('Заголовки изменены. Восстанови их перед обновлением');
  const rows=sheet.getLastRow()>1?sheet.getRange(2,1,sheet.getLastRow()-1,statusCol).getDisplayValues():[];
- const indexes={};rows.forEach((r,i)=>{if(!r[0])throw new Error('Строка без ID: восстанови удалённый ID');if(indexes[r[0]])throw new Error('Повторяется ID');indexes[r[0]]=i+2;});
+ const indexes={};rows.forEach((r,i)=>{if(!r.some(v=>v!==''))return;if(!r[0])throw new Error('Строка без ID: восстанови удалённый ID');if(indexes[r[0]])throw new Error('Повторяется ID');indexes[r[0]]=i+2;});
  const remoteIds=new Set(response.body.rows.map(r=>r.id));
- for(let remote of response.body.rows){
+ for(let remote of response.body.rows.filter(r=>!t.role||(r.role||r.form_type)===t.role)){
   const id=remote.id;let row=indexes[id];
   if(!row){row=sheet.getLastRow()+1;if(row>sheet.getMaxRows())sheet.insertRowsAfter(sheet.getMaxRows(),100);sheet.getRange(row,1,1,statusCol).setNumberFormat('@').setValues([[...fields.map(f=>text_(display_(f,remote[f.key]))),'Сохранено']]);saveState_(st,id,{base:remote,blocked:false});continue;}
   const rec=st.map[id];if(!rec){status_(sheet,row,statusCol,'Нет исходной версии — нужна проверка');continue;}
@@ -149,6 +149,28 @@ function reconcile_(t){
   fields.forEach((f,i)=>{const wanted=display_(f,remote[f.key]);if(latest[i]!==snapshot[i]){pending=true;return;}if(latest[i]!==wanted)sheet.getRange(row,i+1).setNumberFormat('@').setValue(text_(wanted));});
   rec.data.base=remote;saveState_(st,id,rec.data);status_(sheet,row,statusCol,pending?'Есть новые правки — ожидают отправки':'Сохранено');
  }
- Object.keys(indexes).filter(id=>!remoteIds.has(id)).forEach(id=>status_(sheet,indexes[id],statusCol,'Удалена в админке — строка сохранена для истории'));
+ Object.keys(indexes).filter(id=>!remoteIds.has(id)).forEach(id=>{
+  const row=indexes[id],name=sheet.getRange(row,2),old=name.getDisplayValue();
+  if(!old.startsWith('🗑 УДАЛЕНА — '))name.setValue(text_('🗑 УДАЛЕНА — '+old));
+  sheet.getRange(row,1,1,statusCol).setBackground('#fce4e4').setFontColor('#9c2020');
+  name.setFontWeight('bold').setNote('Анкета удалена из админки. Это архивная копия, она не восстановится на сайте.');
+  status_(sheet,row,statusCol,'УДАЛЕНА В АДМИНКЕ — архивная копия');
+ });
  ss.getSheetByName('Инструкция').getRange('B2').setValue('Обновлено: '+Utilities.formatDate(new Date(),'Asia/Seoul','yyyy.MM.dd HH:mm:ss'));
+}
+
+function findBrokenTresRows() {
+  const ss = SpreadsheetApp.openById(config_().TRES_SHEET_ID);
+  const sheet = ss.getSheetByName('Анкеты');
+  const last = sheet.getLastRow();
+
+  if (last < 2) return;
+
+  const ids = sheet.getRange(2, 1, last - 1, 1).getDisplayValues();
+
+  const broken = ids.flatMap((row, i) =>
+    row[0].trim() ? [] : [i + 2]
+  );
+
+  console.log('Строки без ID: ' + broken.join(', '));
 }

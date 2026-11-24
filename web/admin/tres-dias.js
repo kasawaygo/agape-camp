@@ -161,7 +161,7 @@ function showEditor(item) {
             <label class="edit-field"><span>Telegram</span><input name="telegram" type="text" placeholder="@username" autocomplete="off" autocapitalize="none" spellcheck="false" minlength="6" maxlength="33" pattern="@[A-Za-z][A-Za-z0-9_]{4,31}" title="Укажи Telegram username начиная с @"></label><label class="edit-field"><input type="checkbox" name="noTelegram"> У меня нет Telegram</label><label class="edit-field alternate-contact" hidden><span>Другой способ связи *</span><input name="alternateContact" maxlength="160" placeholder="WhatsApp или KakaoTalk" disabled></label>
             <label class="edit-field"><span>Церковь *</span><input name="church" maxlength="160" required></label>
             <label class="edit-field"><span>Размер одежды *</span><select name="clothingSize" required><option value="">Выбрать</option>${["S","M","L","XL","2XL","3XL","4XL","5XL"].map(size => `<option value="${size}">${size}</option>`).join("")}</select></label>
-            <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Департаменты *</legend><small>Можно выбрать от 1 до 10.</small><div class="edit-check-grid">${departmentHtml}</div><p class="inline-error" id="editDepartmentError" hidden>Выбери от 1 до 10 департаментов.</p></fieldset>
+            <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Департаменты *</legend><small>Можно выбрать от 1 до ${departmentChoices.length}.</small><div class="edit-check-grid">${departmentHtml}</div><p class="inline-error" id="editDepartmentError" hidden>Выбери от 1 до ${departmentChoices.length} департаментов.</p></fieldset>
             <label class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><span>Предыдущее служение *</span><textarea name="previousDepartments" rows="3" maxlength="1200"></textarea></label>
             <label class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><span>Читал(а) Рое? *</span><textarea name="readRoe" rows="3" maxlength="1200"></textarea></label>
             <fieldset class="edit-field" ${item.formType === "servant" ? "" : "hidden"}><legend>Нужен ли транспорт? *</legend><label class="radio"><input type="radio" name="needsTransport" value="true" ${item.needsTransport == null ? "" : "required"}> Да</label><label class="radio"><input type="radio" name="needsTransport" value="false" ${item.needsTransport == null ? "" : "required"}> Нет</label></fieldset>
@@ -219,7 +219,7 @@ async function saveEdit(event, item, form) {
     event.preventDefault();
     const message = form.querySelector(".edit-message");
     const departments = [...form.querySelectorAll('[name="departments"]:checked')].map(input => input.value);
-    if (item.formType === "servant" && (departments.length < 1 || departments.length > 10)) {
+    if (item.formType === "servant" && (departments.length < 1 || departments.length > departmentChoices.length)) {
         form.querySelector("#editDepartmentError").hidden = false;
         return;
     }

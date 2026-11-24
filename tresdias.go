@@ -107,7 +107,7 @@ func validateTresDiasRegistration(r *TresDiasRegistration, requireTransport bool
 	r.AttendedBefore = nil
 	allowed := map[string]bool{"Administration": true, "Decoration": true, "Kitchen (еда)": true, "Kitchen (сценки)": true, "Palanka": true, "Room control": true, "Rollo room": true, "Song Team": true, "Chapel": true, "Set up": true, "Refreshment": true, "Photo/Video": true, "Media": true}
 	if len(r.Departments) < 1 || len(r.Departments) > len(allowed) {
-		return "Выбери от 1 до 10 департаментов."
+		return "Выбери хотя бы один департамент из списка."
 	}
 	seen := map[string]bool{}
 	for i, item := range r.Departments {
