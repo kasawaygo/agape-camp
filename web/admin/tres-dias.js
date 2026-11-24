@@ -20,7 +20,7 @@ const departmentChoices = [
     ["Room control", "Room control (порядок в корпусах)"],
     ["Rollo room", "Rollo room (основной зал)"],
     ["Song Team", "Song Team (прославление)"],
-    ["Chapel", "Chapel (молитва)"],
+    ["Chapel", "Prayer Team (молитва)"],
     ["Set up", "Set up (подготовка пространства)"],
     ["Refreshment", "Refreshment (десерты)"],
     ["Photo/Video", "Photo/Video (фото/видеосъёмка)"],
